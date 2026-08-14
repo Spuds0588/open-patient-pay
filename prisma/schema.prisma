@@ -54,6 +54,8 @@ model Organization {
   name      String
   slug      String   @unique
   timezone  String   @default("America/New_York")
+  billingEmail String?
+  billingPhone String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -77,6 +79,13 @@ model Patient {
 
   // Opaque token used in the patient portal URL (/pay/{payToken}).
   payToken String @unique
+
+  // Short-lived one-time magic link for email-based portal access.
+  magicToken         String?    @unique
+  magicTokenExpiresAt DateTime?
+
+  // Opt-in: email reminders before each scheduled payment.
+  remindersEnabled Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlanSelector, PayInstallmentButton } from "@/components/pay/actions";
+import { ContactBilling, EmailActions, RemindersToggle } from "@/components/pay/portal-actions";
 import { getPatientPortalData } from "@/lib/queries";
 import { formatCents } from "@/lib/money";
 import { formatDate } from "@/lib/utils";
@@ -48,6 +50,13 @@ export default async function PatientPortalPage({
       <main className="mx-auto max-w-2xl space-y-6 px-4 py-8">
         <div>
           <p className="text-sm text-muted-foreground">Hello, {data.name.split(" ")[0]} 👋</p>
+          {(data.email || data.phone) && (
+            <p className="text-xs text-muted-foreground">
+              {data.email}
+              {data.email && data.phone ? " · " : ""}
+              {data.phone}
+            </p>
+          )}
           <h1 className="text-3xl font-bold">Your medical bill</h1>
           <p className="mt-2 text-muted-foreground">
             Review your charges below and choose a plan that works for you. No hidden convenience
@@ -153,9 +162,29 @@ export default async function PatientPortalPage({
           );
         })}
 
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Receipts &amp; statements</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Get a copy of your payment receipts or a full statement by email, or open a
+              printable statement right here.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <EmailActions patientToken={token} />
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/pay/${token}/statement`}>🖨️ Open printable statement</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <RemindersToggle patientToken={token} initial={data.remindersEnabled} />
+
+        <ContactBilling billingContact={data.billingContact} />
+
         <footer className="pb-8 text-center text-xs text-muted-foreground">
-          Questions about this bill? Contact your provider&apos;s billing office directly. Open
-          Patient Pay never stores your card number.
+          Open Patient Pay never stores your card number. Access this page anytime with the magic
+          link emailed from <Link href="/login" className="text-primary hover:underline">patient sign-in</Link>.
         </footer>
       </main>
     </div>

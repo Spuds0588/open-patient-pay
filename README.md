@@ -8,8 +8,9 @@ An open-source, self-hosted billing and installment engine for independent medic
 
 ## What it does
 
-- **Patient portal** — a mobile-friendly page where a patient sees a clear balance breakdown, picks a plan (pay-in-full, 3/6/12 months, or weekly/bi-weekly), and checks out through Stripe. Card data is tokenized at Stripe and **never touches your server**.
-- **Provider dashboard** — upload a weekly billing CSV, track balances, watch active installment plans, spot overdue installments, and review an append-only ledger.
+- **Patient portal** — a mobile-friendly page where a patient sees a clear balance breakdown, picks a plan (pay-in-full, 3/6/12 months, or a custom period with their own interval and count), chooses a **first-payment date** (if the provider allows), and checks out through Stripe. Card data is tokenized at Stripe and **never touches your server**.
+- **Magic-link login & email** — patients sign in with just their email (a signed, expiring magic link in dev is printed to the server log or sent via SMTP). From the portal they can opt into payment reminders, email themselves receipts and statements, and print a statement as PDF. Billing contact buttons (call / email) are always one tap away.
+- **Provider dashboard** — upload a weekly billing CSV, **add patients manually** (walk-ins, one-off bills), open any patient's full payment history and invoices, email portal links / statements / reminders, and record manual payments or adjustments straight into the append-only ledger.
 - **Installment engine** — pure, stateless logic that splits a balance into exact installments (integer cents, remainder front-loaded) and recalculates future installments when a balance is adjusted mid-plan. Supports presets (3/6/12 monthly, weekly, bi-weekly) plus **patient-defined periods** (days/weeks/months with a custom interval and count).
 - **Provider-controlled limits** — cap the number of payments, the plan length, and the minimum payment, gate custom periods, and optionally let patients choose their first-payment date.
 - **Adapters** — `PaymentAdapter` and `DataIngestionAdapter` interfaces isolate Stripe and CSV behind swappable contracts (swap in a FHIR feed or another processor later).
@@ -141,6 +142,8 @@ See [`.env.example`](.env.example). Key variables:
 | `PLAN_FIRST_PAYMENT_WINDOW_DAYS` | How far out a first payment may be scheduled |
 | `PLAN_ALLOWED_PERIOD_UNITS` | Comma list of allowed units: `DAY,WEEK,MONTH` |
 | `ADMIN_TOKEN` | If set, `/api/admin/*` requires `Authorization: Bearer <token>` |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_FROM` | Outbound email (magic links, receipts, statements, reminders). Empty → mock mode prints a preview instead |
+| `BILLING_EMAIL` / `BILLING_PHONE` | "Questions about your bill?" contact shown on the patient portal |
 
 ---
 
@@ -156,8 +159,9 @@ docker compose exec db pg_dump -U postgres open_patient_pay > backup-$(date +%F)
 
 ## Security notes
 
-- V1 is a single-practice, self-hosted app with no full auth stack. Set `ADMIN_TOKEN` to protect admin API routes, and front the app with your own reverse proxy/SSO for production.
-- Patient portal access is a high-entropy, unguessable token (`/pay/<token>`). Regenerating a patient's token invalidates old links.
+- Patient access uses **magic links**: a patient enters their email on `/login`, the app mints a high-entropy, expiring token, and (in production) emails it to them — no passwords to store or leak. Once signed in, they're redirected to their portal.
+- The portal URL itself (`/pay/<token>`) remains a high-entropy, unguessable token. Regenerating a patient's token invalidates old links.
+- Admin routes are protected by `ADMIN_TOKEN` (if set). Front the app with your own reverse proxy/SSO for production.
 - No raw card data ever reaches the application server; tokenization happens at Stripe.
 
 ---
@@ -189,7 +193,8 @@ The demo simulates the full patient checkout (mock Stripe) and the provider dash
 
 - Stripe **subscriptions / auto-debit** for saved payment methods (the `ENABLE_AUTO_DEBIT` toggle is already wired).
 - A **FHIR ingestion adapter** (`DataIngestionAdapter`) to pull balances straight from an EHR instead of CSV.
-- Provider auth (login, roles) and email receipts/reminders.
+- Scheduled, automated payment reminders (the opt-in is already wired; a cron/queue would send them on due dates).
+- Provider auth (login, roles) and a full audit trail UI.
 - Multi-tenant SaaS mode behind `ENABLE_CLINIC_REGISTRATION`.
 
 ## License

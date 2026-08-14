@@ -171,13 +171,117 @@ export async function getPatientPortalData(payToken: string) {
   const totalBilled = invoices.reduce((a, i) => a + i.totalCents, 0);
   const totalOutstanding = invoices.reduce((a, i) => a + i.outstandingCents, 0);
 
+  const org = await prisma.organization.findUnique({ where: { id: patient.organizationId } });
+
   return {
     id: patient.id,
     name: patient.name,
     email: patient.email,
+    phone: patient.phone,
+    remindersEnabled: patient.remindersEnabled,
     payToken: patient.payToken,
     totalBilledCents: totalBilled,
     totalOutstandingCents: totalOutstanding,
+    billingContact: {
+      email: org?.billingEmail ?? null,
+      phone: org?.billingPhone ?? null,
+    },
     invoices,
+  };
+}
+
+/** Full drill-down for the admin patient page: balances, invoices, ledger, plans. */
+export async function getPatientDetail(patientId: string) {
+  const patient = await prisma.patient.findUnique({
+    where: { id: patientId },
+    include: {
+      invoices: {
+        include: {
+          transactions: { where: { status: "SUCCEEDED" }, select: { amountCents: true } },
+          plan: { include: { installments: { orderBy: { index: "asc" } } } },
+        },
+        orderBy: { issuedAt: "desc" },
+      },
+      transactions: {
+        include: { invoice: { select: { invoiceNumber: true } } },
+        orderBy: { occurredAt: "desc" },
+        take: 200,
+      },
+      plans: { include: { installments: { orderBy: { index: "asc" } } }, orderBy: { createdAt: "desc" } },
+    },
+  });
+  if (!patient) return null;
+
+  const billed = patient.invoices.reduce((a, i) => a + i.totalCents, 0);
+  const applied = patient.transactions.reduce((a, t) => a + t.amountCents, 0);
+
+  return {
+    id: patient.id,
+    name: patient.name,
+    email: patient.email,
+    phone: patient.phone,
+    externalId: patient.externalId,
+    payToken: patient.payToken,
+    remindersEnabled: patient.remindersEnabled,
+    createdAt: patient.createdAt.toISOString(),
+    billedCents: billed,
+    appliedCents: applied,
+    outstandingCents: Math.max(0, billed - applied),
+    invoices: patient.invoices.map((i) => ({
+      id: i.id,
+      invoiceNumber: i.invoiceNumber,
+      description: i.description,
+      totalCents: i.totalCents,
+      outstandingCents: Math.max(
+        0,
+        i.totalCents - i.transactions.reduce((a, t) => a + t.amountCents, 0)
+      ),
+      issuedAt: i.issuedAt.toISOString(),
+      dueAt: i.dueAt?.toISOString() ?? null,
+      hasPlan: Boolean(i.plan),
+      plan: i.plan
+        ? {
+            id: i.plan.id,
+            count: i.plan.count,
+            periodUnit: i.plan.periodUnit,
+            periodValue: i.plan.periodValue,
+            status: i.plan.status,
+            installments: i.plan.installments.map((x) => ({
+              id: x.id,
+              index: x.index,
+              amountCents: x.amountCents,
+              dueDate: x.dueDate.toISOString(),
+              status: x.status,
+            })),
+          }
+        : null,
+    })),
+    transactions: patient.transactions.map((t) => ({
+      id: t.id,
+      type: t.type,
+      status: t.status,
+      amountCents: t.amountCents,
+      description: t.description,
+      invoiceNumber: t.invoice?.invoiceNumber ?? null,
+      externalRef: t.externalRef,
+      occurredAt: t.occurredAt.toISOString(),
+    })),
+    plans: patient.plans.map((pl) => ({
+      id: pl.id,
+      invoiceId: pl.invoiceId,
+      count: pl.count,
+      periodUnit: pl.periodUnit,
+      periodValue: pl.periodValue,
+      status: pl.status,
+      totalCents: pl.totalCents,
+      firstPaymentAt: pl.firstPaymentAt.toISOString(),
+      installments: pl.installments.map((x) => ({
+        id: x.id,
+        index: x.index,
+        amountCents: x.amountCents,
+        dueDate: x.dueDate.toISOString(),
+        status: x.status,
+      })),
+    })),
   };
 }

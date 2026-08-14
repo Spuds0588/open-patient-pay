@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CopyLink } from "@/components/copy-link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,11 +14,16 @@ export default async function PatientsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Patients</h1>
-        <p className="text-muted-foreground">
-          Share a patient&apos;s portal link to let them view and pay their balance.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Patients</h1>
+          <p className="text-muted-foreground">
+            Drill into any patient&apos;s history, or add one by hand if you&apos;re not importing.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/admin/patients/new">＋ Add patient manually</Link>
+        </Button>
       </div>
 
       <Card>
@@ -42,7 +48,14 @@ export default async function PatientsPage() {
               <TableBody>
                 {patients.map((p) => (
                   <TableRow key={p.id}>
-                    <TableCell className="font-medium">{p.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        href={`/admin/patients/${p.id}`}
+                        className="text-primary hover:underline"
+                      >
+                        {p.name}
+                      </Link>
+                    </TableCell>
                     <TableCell className="text-muted-foreground">{p.externalId ?? "—"}</TableCell>
                     <TableCell className="text-muted-foreground">{p.email ?? "—"}</TableCell>
                     <TableCell className="text-right">{formatCents(p.billedCents)}</TableCell>

@@ -39,6 +39,9 @@ export default async function HomePage() {
           </div>
           <nav className="flex items-center gap-2">
             <Button variant="ghost" asChild>
+              <Link href="/login">Patient sign in</Link>
+            </Button>
+            <Button variant="ghost" asChild>
               <Link href="/admin">Admin</Link>
             </Button>
             {demoToken ? (

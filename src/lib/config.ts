@@ -44,6 +44,23 @@ export const config = {
 
   baseUrl: process.env.APP_BASE_URL ?? "http://localhost:3000",
 
+  // --- Email (magic links, receipts, reminders) ---
+  // Without SMTP the app runs in mock-mail mode: nothing is sent, and callers
+  // surface a preview (great for local dev and the demo).
+  smtpHost: process.env.SMTP_HOST ?? "",
+  smtpPort: int("SMTP_PORT", 587),
+  smtpUser: process.env.SMTP_USER ?? "",
+  smtpPass: process.env.SMTP_PASS ?? "",
+  smtpFrom: process.env.SMTP_FROM ?? "",
+  smtpSecure: bool("SMTP_SECURE", false),
+
+  // --- Billing contact shown to patients (call/email buttons) ---
+  billingEmail: process.env.BILLING_EMAIL ?? "billing@example.com",
+  billingPhone: process.env.BILLING_PHONE ?? "",
+
+  // --- Auth ---
+  magicLinkTtlMinutes: int("MAGIC_LINK_TTL_MINUTES", 15),
+
   // --- Installment plan limits (the provider controls what patients may do) ---
   planLimits: {
     /** Patients may define their own period (unit + interval + count) beyond the presets. */

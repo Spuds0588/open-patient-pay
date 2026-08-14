@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { prisma } from "@/db/client";
 import type { InvoiceRow, PatientRow } from "@/adapters/interfaces";
 import { addDays, buildSchedule, splitEvenly, termMonths, type PeriodUnit } from "./engine";
@@ -14,7 +14,12 @@ export async function getOrCreateOrganization() {
   const existing = await prisma.organization.findFirst();
   if (existing) return existing;
   return prisma.organization.create({
-    data: { name: process.env.APP_NAME ?? "My Clinic", slug: "default" },
+    data: {
+      name: process.env.APP_NAME ?? "My Clinic",
+      slug: "default",
+      billingEmail: config.billingEmail || null,
+      billingPhone: config.billingPhone || null,
+    },
   });
 }
 
@@ -221,6 +226,129 @@ export async function createInstallmentPlan(input: CreatePlanInput) {
   });
 
   return plan;
+}
+
+// ---------------------------------------------------------------------------
+// Magic-link auth (email-verified portal access)
+// ---------------------------------------------------------------------------
+
+export async function issueMagicLink(patientId: string, baseUrl: string) {
+  const patient = await prisma.patient.findUnique({ where: { id: patientId } });
+  if (!patient) throw new Error("Patient not found.");
+  if (!patient.email) {
+    throw new Error("This patient has no email address on file — ask the billing team to add one.");
+  }
+  const token = randomBytes(24).toString("hex");
+  const expiresAt = new Date(Date.now() + config.magicLinkTtlMinutes * 60_000);
+  await prisma.patient.update({
+    where: { id: patientId },
+    data: { magicToken: token, magicTokenExpiresAt: expiresAt },
+  });
+  return {
+    url: `${baseUrl}/pay/magic/${token}`,
+    expiresAt,
+    email: patient.email,
+  };
+}
+
+/** Validate + consume a one-time magic link. Returns the patient or null. */
+export async function consumeMagicLink(token: string) {
+  const patient = await prisma.patient.findUnique({ where: { magicToken: token } });
+  if (!patient) return null;
+  if (!patient.magicTokenExpiresAt || patient.magicTokenExpiresAt.getTime() < Date.now()) {
+    return null;
+  }
+  // One-time use.
+  await prisma.patient.update({
+    where: { id: patient.id },
+    data: { magicToken: null, magicTokenExpiresAt: null },
+  });
+  return patient;
+}
+
+// ---------------------------------------------------------------------------
+// Manual patient/invoice creation (no CSV needed)
+// ---------------------------------------------------------------------------
+
+export interface ManualPatientInput {
+  name: string;
+  email?: string;
+  phone?: string;
+  externalId?: string;
+}
+
+export interface ManualInvoiceInput {
+  invoiceNumber: string;
+  description: string;
+  amountCents: number;
+  issuedAt?: Date;
+  dueAt?: Date;
+}
+
+export async function createPatientManually(
+  orgId: string,
+  input: { patient: ManualPatientInput; invoice?: ManualInvoiceInput }
+) {
+  const patient = await prisma.patient.create({
+    data: {
+      organizationId: orgId,
+      externalId: input.patient.externalId || null,
+      name: input.patient.name,
+      email: input.patient.email || null,
+      phone: input.patient.phone || null,
+      payToken: await newPayToken(),
+    },
+  });
+
+  let invoice = null;
+  if (input.invoice) {
+    invoice = await prisma.invoice.create({
+      data: {
+        organizationId: orgId,
+        patientId: patient.id,
+        invoiceNumber: input.invoice.invoiceNumber,
+        description: input.invoice.description,
+        totalCents: input.invoice.amountCents,
+        issuedAt: input.invoice.issuedAt ?? new Date(),
+        dueAt: input.invoice.dueAt ?? null,
+      },
+    });
+  }
+  return { patient, invoice };
+}
+
+export async function updatePatientContact(
+  patientId: string,
+  input: { name?: string; email?: string | null; phone?: string | null }
+) {
+  return prisma.patient.update({
+    where: { id: patientId },
+    data: {
+      name: input.name ?? undefined,
+      email: input.email === undefined ? undefined : input.email,
+      phone: input.phone === undefined ? undefined : input.phone,
+    },
+  });
+}
+
+/** Manual payment entry (no processor involved) — still append-only, still idempotent. */
+export async function recordManualPayment(input: {
+  patientId: string;
+  invoiceId?: string | null;
+  planId?: string | null;
+  installmentIndex?: number | null;
+  amountCents: number;
+  description: string;
+}) {
+  return recordSuccessfulPayment({
+    patientId: input.patientId,
+    invoiceId: input.invoiceId ?? null,
+    planId: input.planId ?? null,
+    installmentIndex: input.installmentIndex ?? null,
+    amountCents: input.amountCents,
+    externalRef: `manual_${randomUUID()}`,
+    description: input.description,
+  });
 }
 
 // ---------------------------------------------------------------------------

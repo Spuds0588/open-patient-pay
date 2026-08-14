@@ -33,21 +33,14 @@
     line-height: 1.55; -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
-  header.site {
-    position: sticky; top: 0; z-index: 60; background: rgba(255,255,255,.86);
-    backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
-  }
+  header.site { position: sticky; top: 0; z-index: 60; background: rgba(255,255,255,.86); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
   .site-inner { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 12px; }
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; color: var(--fg); }
-  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex: none; }
   nav.site-nav { display: flex; gap: 2px; align-items: center; }
   nav.site-nav a { color: var(--muted-fg); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 12px; border-radius: 8px; }
   nav.site-nav a:hover { color: var(--fg); background: var(--muted); }
-  .gh-btn {
-    display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border);
-    border-radius: 8px; padding: 7px 12px; font-size: 13px; font-weight: 600; color: var(--fg);
-    text-decoration: none; background: #fff;
-  }
+  .gh-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; font-size: 13px; font-weight: 600; color: var(--fg); text-decoration: none; background: #fff; }
   @media (max-width: 720px) { nav.site-nav { display: none; } }
 
   .section { padding: 72px 0; }
@@ -56,36 +49,26 @@
   h1, h2, h3 { letter-spacing: -.02em; }
   h1 { font-size: clamp(30px, 5vw, 52px); line-height: 1.08; margin: 14px 0; }
   h2 { font-size: clamp(24px, 3.5vw, 34px); margin: 0 0 10px; }
-  .lead { color: var(--muted-fg); font-size: 18px; max-width: 680px; margin: 0 auto; }
+  .lead { color: var(--muted-fg); font-size: 18px; max-width: 700px; margin: 0 auto; }
   .center { text-align: center; }
   .pill-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 22px 0 0; }
-  .chip-static {
-    display: inline-flex; align-items: center; gap: 7px; background: #fff; border: 1px solid var(--border);
-    border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 600;
-  }
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0;
-    border-radius: 9px; padding: 11px 18px; font-size: 14px; font-weight: 600; cursor: pointer;
-    transition: .15s; text-decoration: none; color: var(--fg);
-  }
+  .chip-static { display: inline-flex; align-items: center; gap: 7px; background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 600; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 9px; padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: .15s; text-decoration: none; color: var(--fg); }
   .btn.primary { background: var(--primary); color: #fff; }
   .btn.primary:hover { background: #1d4ed8; }
   .btn.outline { background: #fff; border: 1px solid var(--border); }
   .btn.outline:hover { background: var(--muted); }
+  .btn.ghost2 { background: transparent; color: var(--primary); }
   .btn.block { width: 100%; }
-  .btn.lg { padding: 14px 24px; font-size: 15px; }
+  .btn.sm { padding: 6px 11px; font-size: 12px; }
+  .btn.lg { padding: 13px 22px; font-size: 15px; }
   .btn:disabled { opacity: .55; cursor: default; }
 
-  /* ---- scaled device frames ---- */
-  .device-stage { position: relative; }
   .device-tabs { display: inline-flex; gap: 4px; background: var(--muted); padding: 4px; border-radius: 999px; margin-bottom: 22px; }
   .device-tabs button { border: 0; background: transparent; padding: 9px 20px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--muted-fg); cursor: pointer; }
   .device-tabs button.active { background: #fff; color: var(--fg); box-shadow: var(--shadow); }
 
-  .browser {
-    background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
-    box-shadow: 0 20px 60px rgba(15,23,42,.18);
-  }
+  .browser { background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 20px 60px rgba(15,23,42,.18); }
   .browser-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: #fbfcfe; }
   .dots { display: flex; gap: 6px; }
   .dots span { width: 11px; height: 11px; border-radius: 50%; }
@@ -94,12 +77,9 @@
   .shell { width: 100%; overflow: hidden; position: relative; background: #f8fafc; }
   .screen { transform-origin: top left; }
 
-  /* ---- phone chrome (inside the patient screen) ---- */
   .phone-status { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; padding: 8px 16px 4px; color: var(--fg); }
-
-  /* ---- app UI shared ---- */
   .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
-  .card.pad { padding: 18px; }
+  .card.pad { padding: 16px; }
   .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   @media (max-width: 620px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
   .kpi { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 13px; }
@@ -117,12 +97,6 @@
   .pill.warn{ background:var(--warning); color:var(--warning-fg); }
   .pill.ghost{ background:var(--muted); color:var(--muted-fg); }
   .pill.bad{ background:var(--danger); color:var(--danger-fg); }
-  .options { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .opt { border:1px solid var(--border); border-radius:10px; padding:10px 12px; cursor:pointer; text-align:left; background:#fff; transition:.12s; }
-  .opt:hover { background: var(--muted); }
-  .opt.sel { border-color:var(--primary); background:var(--primary-soft); box-shadow: inset 0 0 0 1px var(--primary); }
-  .opt .t { font-weight:700; font-size:13px; }
-  .opt .d { font-size:11px; color:var(--muted-fg); margin-top:2px; }
   .field { margin-bottom:10px; }
   .field label { font-size:12px; font-weight:600; color:var(--muted-fg); display:block; margin-bottom:5px; }
   .input { width:100%; border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:14px; font-family:var(--mono); outline:none; background:#fff; color:var(--fg); }
@@ -132,7 +106,7 @@
   .seg button { flex:1; border:0; background:transparent; padding:8px 4px; font-size:13px; cursor:pointer; color:var(--muted-fg); }
   .seg button.sel { background:var(--primary); color:#fff; }
   .seg button:disabled { opacity:.4; cursor:default; }
-  .hint { font-size:11px; color:var(--muted-fg); text-align:center; margin-top:8px; }
+  .hint { font-size:11px; color:var(--muted-fg); margin-top:6px; }
   .list { list-style:none; margin:0; padding:0; }
   .row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; }
   .row:last-child { border-bottom:0; }
@@ -152,38 +126,28 @@
   .toggle::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; transition:.15s; }
   .toggle.on { background:var(--primary); }
   .toggle.on::after { transform:translateX(18px); }
-
-  /* ---- modal ---- */
-  .modal-bg { position:fixed; inset:0; background:rgba(15,23,42,.5); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
-  .modal-bg.open { display:flex; }
-  .modal { background:#fff; border-radius:14px; width:100%; max-width:400px; box-shadow:0 24px 60px rgba(0,0,0,.3); overflow:hidden; }
-  .modal .m-head { padding:16px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-  .modal .m-body { padding:18px; }
-  .stripe-tag { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted-fg); }
   .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
   .check { width:52px; height:52px; border-radius:50%; background:var(--success); color:var(--success-fg); display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 12px; }
   .hidden { display:none !important; }
+  .notice { font-size:12px; color:var(--success-fg); }
+  .err { font-size:12px; color:var(--danger-fg); }
+  .stripe-field { border:1px solid var(--border); border-radius:8px; padding:10px 12px; background:#fafbfc; }
+  .stripe-field label { font-size:11px; font-weight:600; color:var(--muted-fg); display:block; margin-bottom:4px; }
+  .stripe-field .value { font-size:14px; font-family:var(--mono); }
+  .paybox { border:1px solid #635bff22; border-radius:12px; padding:14px; background:#faf9ff; }
 
-  /* ---- sections below the demo ---- */
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
   @media (max-width: 760px) { .grid2 { grid-template-columns:1fr; } }
   .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
   @media (max-width: 820px) { .grid3 { grid-template-columns:1fr; } }
   .step { background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px; box-shadow:var(--shadow); }
   .step .num { width:30px; height:30px; border-radius:8px; background:var(--primary-soft); color:var(--primary); font-weight:700; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
-  .step code { font-size:12px; }
-  pre.code {
-    background:#0f172a; color:#e2e8f0; border-radius:12px; padding:16px 18px; overflow-x:auto;
-    font-family:var(--mono); font-size:13px; line-height:1.6; margin:0; position:relative;
-  }
-  pre.code .c { color:#7dd3fc; } /* comment */
-  pre.code .p { color:#f472b6; } /* prompt-ish */
+  pre.code { background:#0f172a; color:#e2e8f0; border-radius:12px; padding:16px 18px; overflow-x:auto; font-family:var(--mono); font-size:13px; line-height:1.6; margin:0; }
+  pre.code .c { color:#7dd3fc; }
   .codeblock { position:relative; }
-  .copy {
-    position:absolute; top:10px; right:10px; background:#1e293b; color:#cbd5e1; border:1px solid #334155;
-    border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; font-family:inherit;
-  }
+  .codeblock pre { font-size:12px; }
+  .copy { position:absolute; top:10px; right:10px; background:#1e293b; color:#cbd5e1; border:1px solid #334155; border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; font-family:inherit; }
   .copy:hover { background:#334155; }
   .logos { display:flex; flex-wrap:wrap; gap:10px; }
   .logo-chip { background:#fff; border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; }
@@ -216,7 +180,7 @@
   <div class="wrap">
     <span class="eyebrow">Open source · self-hosted · no software fees</span>
     <h1>Dignified medical billing,<br /><span style="color:var(--primary)">without the predatory fees.</span></h1>
-    <p class="lead">Scroll to actually <strong>use</strong> the patient and provider portals below — set up a plan, pay with a simulated Stripe checkout, import a CSV, and connect an EHR. Then see how a practice spins it up in one command.</p>
+    <p class="lead">Scroll to actually <strong>use</strong> the patient and provider portals below — set up a plan, pay with a pre-filled Stripe checkout, dig into a patient&apos;s history, and connect an EHR. Then see how a practice spins it up in one command.</p>
     <div class="pill-row">
       <span class="chip-static">💳 Stripe</span>
       <span class="chip-static">🩺 FHIR R4</span>
@@ -235,7 +199,6 @@
       <span class="eyebrow">Try it yourself</span>
       <h2>Two portals, one billing engine</h2>
     </div>
-
     <div class="center" style="margin-bottom:10px;">
       <div class="device-tabs">
         <button id="tab-patient" class="active">👤 Patient experience</button>
@@ -243,22 +206,22 @@
       </div>
     </div>
 
-    <!-- PATIENT (phone frame) -->
+    <!-- ================= PATIENT (phone) ================= -->
     <div class="device-stage" id="stage-patient">
-      <div class="browser" style="max-width:420px; margin:0 auto;">
+      <div class="browser" style="max-width:430px; margin:0 auto;">
         <div class="browser-bar">
           <div class="dots"><span></span><span></span><span></span></div>
           <div class="url">pay.openpatientpay.com/pay/&lt;token&gt;</div>
         </div>
-        <div class="shell" data-width="390" data-height="820">
+        <div class="shell" data-width="390">
           <div class="screen" style="width:390px;">
             <div class="phone-status"><span>9:41</span><span>🔒 pay.openpatientpay.com</span></div>
             <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 16px; border-bottom:1px solid var(--border); background:#fff;">
               <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;"><span class="logo" style="width:26px;height:26px;font-size:11px;">OP</span> Open Patient Pay</div>
               <span style="font-size:12px; color:var(--muted-fg);">Marcus Chen</span>
             </div>
-            <div style="padding:14px 16px 40px; background:#f8fafc;">
-              <p style="font-size:12px; color:var(--muted-fg); margin:0;">Hello, Marcus 👋</p>
+            <div style="padding:14px 16px 44px; background:#f8fafc;">
+              <p style="font-size:12px; color:var(--muted-fg); margin:0;">Hello, Marcus 👋 · marcus@example.com</p>
               <h3 style="margin:2px 0 8px; font-size:20px;">Your medical bill</h3>
               <div class="balance">
                 <div class="label">Total balance</div>
@@ -266,41 +229,79 @@
                 <div class="note" id="p-note">1 invoice · Emergency room visit</div>
               </div>
 
+              <!-- plan step -->
               <div class="card pad" style="margin-top:12px;" id="p-plan-step">
-                <div style="font-weight:700; font-size:14px; margin-bottom:4px;">Your bill — Marcus Chen</div>
+                <div style="font-weight:700; font-size:14px; margin-bottom:4px;">Set up your payment</div>
                 <div style="font-size:11px; color:var(--muted-fg); margin-bottom:12px;">Invoice INV-1001 · issued Jul 1, 2026</div>
-                <div class="field"><label>Choose a plan</label></div>
-                <div class="options" id="p-options"></div>
-                <div id="p-custom" class="hidden" style="margin-top:10px; border:1px solid var(--border); border-radius:10px; padding:10px; background:var(--muted);">
-                  <div class="row2">
-                    <div class="field"><label>Pay every</label><input class="input" type="number" id="p-period-value" min="1" value="1" /></div>
-                    <div class="field"><label>Period</label>
-                      <div class="seg" id="p-units">
-                        <button data-unit="DAY">Days</button><button data-unit="WEEK">Weeks</button><button data-unit="MONTH">Months</button>
-                      </div>
+                <button type="button" id="p-full" class="btn outline block" style="margin-bottom:12px;">Pay the full $1,240.00 now</button>
+                <div id="p-installments">
+                  <div class="field"><label>Payment period</label>
+                    <div class="seg" id="p-units">
+                      <button data-unit="MONTH">Months</button><button data-unit="WEEK">Weeks</button><button data-unit="DAY">Days</button>
                     </div>
                   </div>
-                  <div class="field"><label>Number of payments</label><input class="input" type="number" id="p-count" min="1" value="3" /></div>
+                  <div class="row2">
+                    <div class="field"><label>Pay every</label><input class="input" type="number" id="p-period-value" min="1" value="1" /></div>
+                    <div class="field"><label>Number of payments</label><input class="input" type="number" id="p-count" min="1" value="6" /></div>
+                  </div>
+                  <div class="field"><label>First payment date</label><input class="input" type="date" id="p-first-date" /></div>
+                  <p class="hint" id="p-summary"></p>
+                  <p class="err hidden" id="p-validation"></p>
                 </div>
-                <div id="p-date" class="field" style="margin-top:10px;">
-                  <label>First payment date</label>
-                  <input class="input" type="date" id="p-first-date" />
-                  <div style="font-size:11px; color:var(--muted-fg); margin-top:4px;">Later payments follow your chosen period automatically.</div>
+                <button class="btn primary block lg" id="p-begin">Continue to payment</button>
+                <p class="hint center">🔒 Secured by Stripe — your card details never touch the clinic&apos;s server.</p>
+              </div>
+
+              <!-- inline Stripe (pre-filled, stays inside the phone) -->
+              <div class="card pad hidden" style="margin-top:12px;" id="p-pay-step">
+                <div class="paybox">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                    <div style="font-weight:700; font-size:14px;">Checkout</div>
+                    <span class="pill ghost" style="background:#f1f0ff; color:#635bff;">⚡ Stripe (demo)</span>
+                  </div>
+                  <div class="row" style="padding-top:0; padding-bottom:8px;"><div class="muted">First payment due now</div><div class="money" id="p-pay-amount">$206.67</div></div>
+                  <div class="stripe-field"><label>Card number</label><div class="value" id="p-card-number">4242 4242 4242 4242</div></div>
+                  <div class="row2" style="margin-top:8px;">
+                    <div class="stripe-field"><label>Expiry</label><div class="value">12 / 29</div></div>
+                    <div class="stripe-field"><label>CVC</label><div class="value">123</div></div>
+                  </div>
+                  <div class="stripe-field" style="margin-top:8px;"><label>ZIP</label><div class="value">10001</div></div>
+                  <button class="btn primary block" id="p-pay" style="margin-top:12px;">Pay <span id="p-pay-btn-amount">$206.67</span></button>
+                  <p class="hint center">Demo only — pre-filled card, no real charge.</p>
                 </div>
-                <p style="font-size:12px; color:var(--muted-fg);" id="p-summary"></p>
-                <p style="font-size:12px; color:var(--danger-fg);" id="p-validation" class="hidden"></p>
-                <button class="btn primary block" id="p-begin">Set up plan &amp; pay</button>
-                <p class="hint">🔒 Secured by Stripe. Card data never touches the clinic&apos;s server.</p>
+              </div>
+
+              <!-- processing / success -->
+              <div class="card pad center hidden" style="margin-top:12px;" id="p-processing">
+                <div style="display:flex; justify-content:center; margin-bottom:10px;"><div style="width:30px;height:30px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;"></div></div>
+                <p style="font-weight:600;">Processing payment…</p>
+                <p class="note">Tokenizing card with Stripe</p>
               </div>
 
               <div class="card pad hidden" style="margin-top:12px;" id="p-success-step">
                 <div class="center">
                   <div class="check">✓</div>
                   <div style="font-weight:700; font-size:16px;">Payment received</div>
-                  <div class="note" style="margin:4px 0 12px;">Your first payment is confirmed.</div>
+                  <p class="note" style="margin:4px 0 12px;">Your first payment is confirmed. Auto-debit is on for the rest.</p>
                 </div>
                 <ul class="list" id="p-schedule"></ul>
-                <button class="btn outline block" id="p-reset" style="margin-top:12px;">↺ Reset demo</button>
+                <div class="row" style="margin-top:6px;">
+                  <div><div class="money" style="font-weight:600;">Reminders &amp; copies</div><div class="muted">Receipts, statements, and due-date heads-ups</div></div>
+                  <button class="toggle on" id="p-reminders"></button>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                  <button class="btn outline sm" id="p-email-receipt">🧾 Email receipt</button>
+                  <button class="btn outline sm" id="p-email-statement">📄 Email statement</button>
+                </div>
+                <p class="notice hidden" id="p-email-notice" style="margin-top:8px;"></p>
+                <div style="border-top:1px solid var(--border); margin-top:12px; padding-top:10px;">
+                  <div style="font-size:12px; color:var(--muted-fg); margin-bottom:6px;">Questions about your bill?</div>
+                  <div style="display:flex; gap:8px;">
+                    <a class="btn outline sm" href="tel:+15550141">📞 Call billing</a>
+                    <a class="btn outline sm" href="mailto:billing@clinic.com">✉️ Email billing</a>
+                  </div>
+                </div>
+                <button class="btn ghost2 block sm" id="p-reset" style="margin-top:10px;">↺ Reset demo</button>
               </div>
             </div>
           </div>
@@ -308,14 +309,14 @@
       </div>
     </div>
 
-    <!-- PROVIDER (desktop frame) -->
+    <!-- ================= PROVIDER (desktop) ================= -->
     <div class="device-stage hidden" id="stage-provider">
       <div class="browser">
         <div class="browser-bar">
           <div class="dots"><span></span><span></span><span></span></div>
-          <div class="url">admin.openpatientpay.com/dashboard</div>
+          <div class="url">admin.openpatientpay.com</div>
         </div>
-        <div class="shell" data-width="1100" data-height="760">
+        <div class="shell" data-width="1100">
           <div class="screen" style="width:1100px;">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid var(--border); background:#fff;">
               <div style="display:flex; align-items:center; gap:10px; font-weight:700;">
@@ -324,7 +325,7 @@
               </div>
               <div class="tabbar" style="border:0; padding:0;" id="provider-tabs"></div>
             </div>
-            <div style="padding:20px; background:#f8fafc; min-height:640px;">
+            <div style="padding:20px; background:#f8fafc;">
               <div id="prov-dashboard">
                 <div class="kpis" id="prov-kpis"></div>
                 <div class="grid2" style="margin-top:16px;">
@@ -335,12 +336,44 @@
                   <div class="card pad">
                     <div style="font-weight:700; margin-bottom:8px;">Integrations</div>
                     <ul class="list">
-                      <li class="row"><div><div class="money">Stripe payments</div><div class="muted" id="prov-stripe-status">Not connected — mock mode</div></div><button class="btn outline" id="prov-stripe" style="padding:6px 12px; font-size:12px;">Connect</button></li>
-                      <li class="row"><div><div class="money">EHR / FHIR records</div><div class="muted" id="prov-fhir-status">Not connected</div></div><button class="btn outline" id="prov-fhir" style="padding:6px 12px; font-size:12px;">Connect</button></li>
+                      <li class="row"><div><div class="money">Stripe payments</div><div class="muted" id="prov-stripe-status">Not connected — mock mode</div></div><button class="btn outline sm" id="prov-stripe">Connect</button></li>
+                      <li class="row"><div><div class="money">EHR / FHIR records</div><div class="muted" id="prov-fhir-status">Not connected</div></div><button class="btn outline sm" id="prov-fhir">Connect</button></li>
                       <li class="row"><div><div class="money">Hosting</div><div class="muted">Any Docker host</div></div><span class="pill ok">ready</span></li>
                     </ul>
                   </div>
                 </div>
+              </div>
+
+              <div id="prov-patients" class="hidden">
+                <div class="card pad hidden" id="prov-add-form" style="margin-bottom:12px;">
+                  <div style="font-weight:700; margin-bottom:8px;">Add patient manually</div>
+                  <p class="note" style="margin:0 0 10px;">No CSV or EHR needed — for walk-ins and one-off bills.</p>
+                  <div class="row2">
+                    <div class="field"><label>Full name</label><input class="input" type="text" id="pa-name" placeholder="Jordan Smith" /></div>
+                    <div class="field"><label>Email</label><input class="input" type="email" id="pa-email" placeholder="jordan@example.com" /></div>
+                  </div>
+                  <div class="row2">
+                    <div class="field"><label>Phone</label><input class="input" type="text" id="pa-phone" placeholder="555-0100" /></div>
+                    <div class="field"><label>Invoice amount ($)</label><input class="input" type="number" id="pa-amount" step="0.01" min="0" placeholder="250.00" /></div>
+                  </div>
+                  <div class="field"><label>Invoice description</label><input class="input" type="text" id="pa-desc" placeholder="Office visit — routine checkup" /></div>
+                  <div style="display:flex; gap:8px;">
+                    <button class="btn primary sm" id="pa-save">Save patient</button>
+                    <button class="btn outline sm" id="pa-cancel">Cancel</button>
+                  </div>
+                  <p class="notice hidden" id="pa-notice" style="margin-top:8px;"></p>
+                </div>
+                <div class="card pad" id="prov-patients-list">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                    <div>
+                      <div style="font-weight:700;">Patients</div>
+                      <div class="note">Click a patient to open their full history and resolve issues.</div>
+                    </div>
+                    <button class="btn primary sm" id="prov-add-patient">＋ Add patient manually</button>
+                  </div>
+                  <table id="prov-patients-table"></table>
+                </div>
+                <div class="card pad hidden" id="prov-patient-detail" style="margin-top:12px;"></div>
               </div>
 
               <div id="prov-import" class="hidden">
@@ -369,7 +402,7 @@
                   </div>
                   <div class="row" style="padding:8px 0;"><div>Allow custom periods</div><button class="toggle on" id="s-custom"></button></div>
                   <div class="row" style="padding:8px 0;"><div>Allow choosing first-payment date</div><button class="toggle on" id="s-date"></button></div>
-                  <p class="note" style="margin-top:10px;">Tip: raise “Min payment” to $50, then switch to the Patient tab and try an 8-payment plan — it&apos;ll be rejected.</p>
+                  <p class="note" style="margin-top:10px;">Tip: raise “Min payment” to $50, then switch to the Patient tab and try 30 payments — it&apos;ll be rejected.</p>
                 </div>
               </div>
 
@@ -402,20 +435,20 @@
       <div class="step">
         <div class="num">1</div>
         <h3 style="margin:0 0 8px; font-size:16px;">Clone</h3>
-        <pre class="code" style="font-size:12px;">git clone https://github.com/Spuds0588/open-patient-pay.git
+        <pre class="code">git clone https://github.com/Spuds0588/open-patient-pay.git
 cd open-patient-pay</pre>
       </div>
       <div class="step">
         <div class="num">2</div>
         <h3 style="margin:0 0 8px; font-size:16px;">Configure</h3>
-        <pre class="code" style="font-size:12px;">cp .env.example .env
+        <pre class="code">cp .env.example .env
 # edit DATABASE_URL, APP_BASE_URL,
-# plan limits, Stripe keys…</pre>
+# plan limits, Stripe keys, SMTP…</pre>
       </div>
       <div class="step">
         <div class="num">3</div>
         <h3 style="margin:0 0 8px; font-size:16px;">Launch</h3>
-        <pre class="code" style="font-size:12px;">docker compose up -d
+        <pre class="code">docker compose up -d
 docker compose exec app \
   npx prisma db seed   # demo data</pre>
       </div>
@@ -457,6 +490,7 @@ docker compose exec app \
           <span class="logo-chip">🅱 Braintree <span class="sub">via adapter</span></span>
           <span class="logo-chip">🩺 FHIR R4 <span class="sub">Epic · Cerner · athena</span></span>
           <span class="logo-chip">📄 CSV <span class="sub">any practice mgmt export</span></span>
+          <span class="logo-chip">✉️ SMTP <span class="sub">magic links · receipts · reminders</span></span>
         </div>
         <p class="note" style="margin-top:14px;">The <code>PaymentAdapter</code> and <code>DataIngestionAdapter</code> interfaces mean a new processor or EHR feed is a drop-in module, not a rewrite.</p>
       </div>
@@ -491,8 +525,9 @@ When you're done, give me the patient portal link for the sample patient.</pre>
           <pre class="code" id="copy2"><span class="c"># customize the bracketed values, then hand it over</span>
 Help me launch Open Patient Pay for a client called &lt;Clinic Name&gt;.
 Clone the repo, set APP_BASE_URL to https://pay.&lt;clinic&gt;.com,
-connect Stripe with their keys, set PLAN_MAX_MONTHS=36 and
-PLAN_MIN_PAYMENT_CENTS=2000, deploy on &lt;Hetzner / Fly.io / Render&gt;,
+connect Stripe with their keys and SMTP for patient emails,
+set PLAN_MAX_MONTHS=36 and PLAN_MIN_PAYMENT_CENTS=2000,
+deploy on &lt;Hetzner / Fly.io / Render&gt;,
 and give me a go-live checklist.</pre>
         </div>
       </div>
@@ -515,38 +550,7 @@ and give me a go-live checklist.</pre>
     <p>Apache-2.0 · <a href="https://github.com/Spuds0588/open-patient-pay" target="_blank" rel="noopener">github.com/Spuds0588/open-patient-pay</a></p>
     <p class="note" style="margin-top:8px;">Demo only — no real charge is made. Card data is simulated and never leaves this page.</p>
   </div>
-</footer>
-
-<!-- payment modal -->
-<div class="modal-bg" id="modal">
-  <div class="modal">
-    <div class="m-head">
-      <div class="stripe-tag">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="#635bff"><path d="M13.5 8.2c0-.7-.57-1-1.53-1H9.6l-2.6 9.6h2.2l.6-2.3h1.6c1.7 0 3.2-.7 3.2-2.6 0-1.5-1.2-2.5-2.9-2.5h-.8l.4-1.5h.9c.4 0 .7.2.7.6l.1.7h2zm-1.7 3.7h-1.1l.7-2.6h1.1c.8 0 1.3.3 1.3 1.2 0 .9-.7 1.4-2 1.4z"/><path d="M9 8.2l-2.6 9.6H4.2l2.6-9.6H9z"/></svg>
-        Stripe Checkout
-      </div>
-      <button class="btn outline" id="modal-close" style="padding:4px 8px;">✕</button>
-    </div>
-    <div class="m-body" id="modal-body">
-      <div id="pay-form">
-        <div class="row" style="padding-top:0;"><div class="muted">First payment due now</div><div class="money" id="pay-amount">$206.67</div></div>
-        <div class="field"><label>Card number</label><input class="input" id="card-number" placeholder="4242 4242 4242 4242" inputmode="numeric" maxlength="19" /></div>
-        <div class="row2">
-          <div class="field"><label>Expiry</label><input class="input" id="card-expiry" placeholder="12 / 29" maxlength="7" /></div>
-          <div class="field"><label>CVC</label><input class="input" id="card-cvc" placeholder="123" inputmode="numeric" maxlength="4" /></div>
-        </div>
-        <div class="field"><label>ZIP</label><input class="input" id="card-zip" placeholder="10001" inputmode="numeric" maxlength="10" /></div>
-        <button class="btn primary block" id="btn-pay">Pay <span id="btn-pay-amount">$206.67</span></button>
-        <p class="hint">Demo only — no real charge. Card data is simulated, never sent.</p>
-      </div>
-      <div id="pay-processing" class="hidden center" style="padding:40px 0;">
-        <div style="display:flex; justify-content:center; margin-bottom:14px;"><div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;"></div></div>
-        <p>Processing payment…</p>
-        <p class="note">Tokenizing card with Stripe</p>
-      </div>
-    </div>
-  </div>
-</div>
+</section>
 
 <script>
 (function () {
@@ -564,11 +568,11 @@ and give me a go-live checklist.</pre>
     var last=new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth()+1, 0)).getUTCDate();
     t.setUTCDate(Math.min(day,last)); return t;
   }
-  function dueDate(unit, value, first, index){
+  function dueDate(unit, value, iso, index){
     var steps = index*value;
-    if (unit==="DAY"){ var d=new Date(first); d.setUTCDate(d.getUTCDate()+steps); return d; }
-    if (unit==="WEEK"){ var w=new Date(first); w.setUTCDate(w.getUTCDate()+steps*7); return w; }
-    return addMonthsClamped(first, steps);
+    if (unit==="DAY"){ var d=new Date(iso+"T00:00:00Z"); d.setUTCDate(d.getUTCDate()+steps); return d; }
+    if (unit==="WEEK"){ var w=new Date(iso+"T00:00:00Z"); w.setUTCDate(w.getUTCDate()+steps*7); return w; }
+    return addMonthsClamped(new Date(iso+"T00:00:00Z"), steps);
   }
   function termMonths(unit, value, count){
     var pp = unit==="MONTH"?1 : unit==="WEEK"?7/30.4375 : 1/30.4375;
@@ -576,113 +580,273 @@ and give me a go-live checklist.</pre>
   }
   function todayISO(offsetDays){
     var d=new Date(); if(offsetDays) d.setDate(d.getDate()+offsetDays);
-    var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
-    return y+"-"+m+"-"+day;
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   }
   function fmtDate(d){ return d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}); }
 
   var TOTAL = 124000;
+  var UNIT_LABEL = { DAY:"day", WEEK:"week", MONTH:"month" };
   var settings = { minCents:1000, maxMonths:60, maxPayments:48, windowDays:60, allowCustom:true, allowDate:true };
-  var pState = { count:3, unit:"MONTH", value:1, custom:false, paid:[] };
-  var provState = { stripe:false, fhir:false, tab:"dashboard" };
+  var pState = { unit:"MONTH", value:1, count:6, payInFull:false, paid:[], step:"plan" };
+  var provState = { stripe:false, fhir:false, tab:"dashboard", patientId:null };
 
-  var PRESETS = [
-    { label:"Pay in full", hint:"1 payment", count:1, unit:"MONTH", value:1 },
-    { label:"3 monthly", hint:"every month", count:3, unit:"MONTH", value:1 },
-    { label:"6 monthly", hint:"every month", count:6, unit:"MONTH", value:1 },
-    { label:"12 monthly", hint:"every month", count:12, unit:"MONTH", value:1 },
-    { label:"Weekly", hint:"every week", count:12, unit:"WEEK", value:1 },
-    { label:"Every 2 weeks", hint:"bi-weekly", count:12, unit:"WEEK", value:2 }
-  ];
-  var UNIT_LABEL = { DAY:"days", WEEK:"weeks", MONTH:"months" };
-
-  // ---- scaled screens ----
+  // ---- scaled screens (grow with content so the page scrolls) ----
   function fitScreens(){
     document.querySelectorAll(".shell").forEach(function(shell){
       var screen = shell.querySelector(".screen");
       var w = parseInt(shell.getAttribute("data-width"),10);
-      var h = parseInt(shell.getAttribute("data-height"),10);
       var scale = shell.clientWidth / w;
-      shell.style.height = (h*scale) + "px";
       screen.style.width = w + "px";
       screen.style.transform = "scale(" + scale + ")";
+      shell.style.height = Math.ceil(screen.scrollHeight * scale) + "px";
     });
   }
 
-  // ---- patient rendering ----
-  function amounts(){ return splitEvenly(TOTAL, pState.count); }
-  function firstPayment(){ return amounts()[0]; }
-  function renderOptions(){
-    var box = $("p-options"); box.innerHTML = "";
-    PRESETS.forEach(function(o){
-      var b=document.createElement("button"); b.type="button";
-      var sel = !pState.custom && pState.count===o.count && pState.unit===o.unit && pState.value===o.value;
-      b.className = "opt" + (sel?" sel":"");
-      var amt = splitEvenly(TOTAL, o.count)[0];
-      b.innerHTML = '<div class="t">'+o.label+'</div><div class="d">'+(o.count===1?o.hint:o.hint+" · ~"+fmt(amt)+" each")+'</div>';
-      b.onclick=function(){ pState.custom=false; pState.count=o.count; pState.unit=o.unit; pState.value=o.value; renderOptions(); renderPatient(); };
-      box.appendChild(b);
-    });
-    if (settings.allowCustom){
-      var c=document.createElement("button"); c.type="button";
-      c.className = "opt" + (pState.custom?" sel":"");
-      c.innerHTML = '<div class="t">Custom schedule</div><div class="d">choose your own period &amp; count</div>';
-      c.onclick=function(){ pState.custom=true; if(pState.count===1) pState.count=3; renderOptions(); renderPatient(); };
-      box.appendChild(c);
-    }
-    $("p-custom").classList.toggle("hidden", !pState.custom);
-    $("p-date").classList.toggle("hidden", !settings.allowDate);
-    renderUnits();
-  }
-  function renderUnits(){
-    $("p-units").querySelectorAll("button").forEach(function(b){
-      var u=b.getAttribute("data-unit");
-      b.classList.toggle("sel", pState.unit===u);
-    });
-  }
+  // ================= PATIENT =================
+  function firstPayment(){ return splitEvenly(TOTAL, pState.payInFull?1:pState.count)[0]; }
+  function payAmount(){ return firstPayment(); }
   function renderPatient(){
     $("p-period-value").value = pState.value;
     $("p-count").value = pState.count;
-    var amts = amounts(), per = amts[0], months = termMonths(pState.unit, pState.value, pState.count);
-    var firstDate = new Date(($("p-first-date").value||todayISO())+"T00:00:00Z");
-    var lastDate = dueDate(pState.unit, pState.value, firstDate, pState.count-1);
-    $("p-summary").innerHTML = pState.count + (pState.count>1?" payments":" payment") + " of <strong>" + fmt(per) + "</strong>" +
-      (pState.count>1?" each":"") + (months>0? " · ~"+Math.round(months)+" month"+(Math.round(months)===1?"":"s")+" total":"") +
-      (pState.count>1? " · last "+fmtDate(lastDate):"");
+    var payInFull = pState.payInFull;
+    $("p-installments").classList.toggle("hidden", payInFull);
+    $("p-full").textContent = payInFull ? "Pay in installments instead" : "Pay the full $1,240.00 now";
+    $("p-units").querySelectorAll("button").forEach(function(b){
+      b.classList.toggle("sel", pState.unit===b.getAttribute("data-unit"));
+    });
 
-    var err=null;
-    if (pState.count > settings.maxPayments) err = "Maximum "+settings.maxPayments+" payments.";
-    else if (months > settings.maxMonths) err = "Plan is longer than the "+settings.maxMonths+"-month maximum.";
-    else if (pState.count>1 && per < settings.minCents) err = "Each payment must be at least "+fmt(settings.minCents)+".";
-    $("p-validation").classList.toggle("hidden", !err);
-    $("p-validation").textContent = err || "";
-    $("p-begin").disabled = !!err;
-    $("p-begin").innerHTML = "Set up plan &amp; pay " + fmt(per);
-    $("pay-amount").textContent = fmt(per);
-    $("btn-pay-amount").textContent = fmt(per);
-    renderSchedule();
+    if (payInFull) {
+      $("p-summary").innerHTML = "One payment of <strong>"+fmt(TOTAL)+"</strong> today. No installments, no fees.";
+      $("p-validation").classList.add("hidden");
+    } else {
+      var amts = splitEvenly(TOTAL, pState.count), per = amts[0], months = termMonths(pState.unit, pState.value, pState.count);
+      var iso = $("p-first-date").value || todayISO();
+      var lastDate = dueDate(pState.unit, pState.value, iso, pState.count-1);
+      $("p-summary").innerHTML = pState.count + (pState.count>1?" payments":" payment") + " of <strong>"+fmt(per)+"</strong>" +
+        (pState.count>1?" each":"") + (months>0?" · ~"+Math.round(months)+" month"+(Math.round(months)===1?"":"s")+" total":"") +
+        (pState.count>1? " · last "+fmtDate(lastDate):"");
+      var err = null;
+      if (pState.count > settings.maxPayments) err = "Maximum "+settings.maxPayments+" payments.";
+      else if (months > settings.maxMonths) err = "Plan is longer than the "+settings.maxMonths+"-month maximum.";
+      else if (per < settings.minCents) err = "Each payment must be at least "+fmt(settings.minCents)+".";
+      var v = $("p-validation");
+      v.classList.toggle("hidden", !err);
+      v.textContent = err || "";
+    }
+    $("p-pay-amount").textContent = fmt(payAmount());
+    $("p-pay-btn-amount").textContent = fmt(payAmount());
   }
   function renderSchedule(){
     var ul = $("p-schedule"); ul.innerHTML="";
-    var amts=amounts();
+    var count = pState.payInFull?1:pState.count;
+    var amts = splitEvenly(TOTAL, count);
+    var iso = $("p-first-date").value || todayISO();
     amts.forEach(function(a,i){
       var li=document.createElement("li"); li.className="row";
       var paid = pState.paid.indexOf(i)>=0;
-      var d = dueDate(pState.unit, pState.value, new Date(($("p-first-date").value||todayISO())+"T00:00:00Z"), i);
+      var d = dueDate(pState.unit, pState.value, iso, i);
       li.innerHTML = '<div><div style="font-weight:600;">'+(i===0?"First payment":"Payment #"+(i+1))+'</div><div class="muted">'+fmtDate(d)+'</div></div>'+
         '<div class="right"><span class="money">'+fmt(a)+'</span>'+(paid?'<span class="pill ok">Paid</span>':'<span class="pill ghost">Scheduled</span>')+'</div>';
       ul.appendChild(li);
     });
   }
   function renderPatientBalance(){
-    var paidTotal = pState.paid.reduce(function(acc,i){ return acc + amounts()[i]; }, 0);
-    var outstanding = TOTAL - paidTotal;
-    $("p-balance").textContent = fmt(outstanding);
+    var amts = splitEvenly(TOTAL, pState.payInFull?1:pState.count);
+    var paidTotal = pState.paid.reduce(function(acc,i){ return acc+amts[i]; },0);
+    $("p-balance").textContent = fmt(TOTAL-paidTotal);
     $("p-note").textContent = paidTotal>0 ? fmt(paidTotal)+" paid · 1 invoice" : "1 invoice · Emergency room visit";
   }
+  function showStep(step){
+    pState.step = step;
+    $("p-plan-step").classList.toggle("hidden", step!=="plan");
+    $("p-pay-step").classList.toggle("hidden", step!=="pay");
+    $("p-processing").classList.toggle("hidden", step!=="processing");
+    $("p-success-step").classList.toggle("hidden", step!=="success");
+    fitScreens();
+  }
 
-  // ---- provider rendering ----
-  var PROVIDER_TABS = [["dashboard","Dashboard"],["import","Import CSV"],["settings","Plan settings"],["ledger","Ledger"]];
+  // patient input wiring
+  $("p-full").addEventListener("click", function(){ pState.payInFull=!pState.payInFull; renderPatient(); });
+  $("p-units").addEventListener("click", function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    pState.unit=b.getAttribute("data-unit"); renderPatient();
+  });
+  $("p-period-value").addEventListener("input", function(){ pState.value=Math.max(1, parseInt(this.value,10)||1); renderPatient(); });
+  $("p-count").addEventListener("input", function(){ pState.count=Math.max(1, parseInt(this.value,10)||1); renderPatient(); });
+  $("p-first-date").addEventListener("input", function(){ renderPatient(); });
+
+  $("p-begin").addEventListener("click", function(){
+    if (!$("p-validation").classList.contains("hidden")) return;
+    showStep("pay");
+    $("p-pay-step").scrollIntoView({ behavior:"smooth", block:"center" });
+  });
+  $("p-pay").addEventListener("click", function(){
+    showStep("processing");
+    setTimeout(function(){
+      pState.paid.push(0);
+      renderSchedule(); renderPatientBalance();
+      showStep("success");
+    }, 1500);
+  });
+  $("p-reset").addEventListener("click", function(){
+    pState = { unit:"MONTH", value:1, count:6, payInFull:false, paid:[], step:"plan" };
+    renderPatient(); renderSchedule(); renderPatientBalance(); showStep("plan");
+  });
+  $("p-reminders").addEventListener("click", function(){
+    this.classList.toggle("on");
+    var el=this; setTimeout(function(){ el.classList.add("on"); }, 2000);
+  });
+  function emailNotice(msg){
+    var n = $("p-email-notice");
+    n.textContent = msg;
+    n.classList.remove("hidden");
+  }
+  $("p-email-receipt").addEventListener("click", function(){
+    emailNotice("Receipt emailed to marcus@example.com ✓ (simulated — your clinic's SMTP is used in production).");
+  });
+  $("p-email-statement").addEventListener("click", function(){
+    emailNotice("Statement emailed to marcus@example.com ✓ (simulated).");
+  });
+
+  // ================= PROVIDER =================
+  var PATIENTS = [
+    { id:1, name:"Marcus Chen", email:"marcus@example.com", phone:"555-0141", externalId:"MRN-1001", billed:124000, paid:20667, overdue:0,
+      invoices:[{ num:"INV-1001", desc:"Emergency room visit", total:124000, outstanding:103333, plan:"6 monthly · 1 paid" }],
+      history:[{t:"PAYMENT",d:"First installment",a:"+$206.67",cls:"ok"},{t:"PAYMENT",d:"Payment 1 of 6",a:"+$143.34",cls:"ok"}] },
+    { id:2, name:"Aisha Patel", email:"aisha@example.com", phone:"555-0142", externalId:"MRN-1002", billed:86000, paid:14334, overdue:0,
+      invoices:[{ num:"INV-1002", desc:"Outpatient radiology", total:86000, outstanding:71666, plan:"6 monthly · 1 paid" }],
+      history:[{t:"PAYMENT",d:"Payment 1 of 6",a:"+$143.34",cls:"ok"}] },
+    { id:3, name:"Diego Ramirez", email:"diego@example.com", phone:"555-0143", externalId:"MRN-1003", billed:21550, paid:0, overdue:1,
+      invoices:[{ num:"INV-1003", desc:"Lab work — CBC panel", total:21550, outstanding:21550, plan:"12 monthly · first payment due" }],
+      history:[{t:"PAYMENT",d:"First installment",a:"+$0.00",cls:"ghost"}] },
+    { id:4, name:"Emily Johnson", email:"emily@example.com", phone:"555-0144", externalId:"MRN-1004", billed:49000, paid:0, overdue:0,
+      invoices:[{ num:"INV-1004", desc:"Physical therapy (3 sessions)", total:49000, outstanding:49000, plan:"—" }],
+      history:[] },
+    { id:5, name:"Tom Okafor", email:"tom@example.com", phone:"555-0145", externalId:"MRN-1005", billed:15000, paid:0, overdue:0,
+      invoices:[{ num:"INV-1005", desc:"Specialist consultation", total:15000, outstanding:15000, plan:"—" }],
+      history:[] }
+  ];
+  var nextPatientId = 100;
+  function patientById(id){ for (var i=0;i<PATIENTS.length;i++) if(PATIENTS[i].id===id) return PATIENTS[i]; return null; }
+
+  function renderProvider(){
+    var paid = pState.paid.reduce(function(acc,i){return acc+splitEvenly(TOTAL, pState.payInFull?1:pState.count)[i];},0);
+    $("prov-kpis").innerHTML =
+      kpi("Outstanding", fmt(TOTAL-paid), "accent") +
+      kpi("Collected", fmt(paid), "") +
+      kpi("Billed", fmt(TOTAL), "") +
+      kpi("Overdue", "1", "danger");
+    $("prov-ledger").innerHTML =
+      ledgerRow("PAYMENT","Marcus Chen","First installment","+$206.67","ok") +
+      ledgerRow("PAYMENT","Aisha Patel","Payment 1 of 6","+$143.34","ok") +
+      ledgerRow("ADJUSTMENT","Emily Johnson","Insurance write-off","−$90.00","ghost");
+    $("prov-ledger-table").innerHTML =
+      '<tr><th>Type</th><th>Patient</th><th>Description</th><th style="text-align:right">Amount</th></tr>' +
+      '<tr><td><span class="pill ok">PAYMENT</span></td><td>Marcus Chen</td><td>First installment</td><td style="text-align:right;font-weight:600;">+$206.67</td></tr>' +
+      '<tr><td><span class="pill ok">PAYMENT</span></td><td>Aisha Patel</td><td>Payment 1 of 6</td><td style="text-align:right;font-weight:600;">+$143.34</td></tr>' +
+      '<tr><td><span class="pill ghost">ADJUSTMENT</span></td><td>Emily Johnson</td><td>Insurance write-off</td><td style="text-align:right;font-weight:600;">−$90.00</td></tr>';
+    renderPatientsTable();
+  }
+  function kpi(label,value,cls){ return '<div class="kpi"><div class="label">'+label+'</div><div class="value '+cls+'">'+value+'</div></div>'; }
+  function ledgerRow(type,name,desc,amount,cls){
+    return '<li class="row"><div class="right"><span class="pill '+(cls==="ok"?"ok":"ghost")+'">'+type+'</span><span>'+name+'</span><span class="muted">'+desc+'</span></div><span class="money" style="color:'+(amount[0]==="-"? "#dc2626":"#059669")+'">'+amount+'</span></li>';
+  }
+  function renderPatientsTable(){
+    var rows = PATIENTS.map(function(p){
+      return '<tr style="cursor:pointer;" onclick="window.__openPatient && window.__openPatient('+p.id+')">'+
+        '<td style="color:var(--primary);font-weight:600;">'+p.name+'</td>'+
+        '<td class="muted">'+p.externalId+'</td>'+
+        '<td class="muted">'+p.email+'</td>'+
+        '<td style="text-align:right">'+fmt(p.billed)+'</td>'+
+        '<td style="text-align:right;font-weight:600;color:var(--primary);">'+fmt(p.billed-p.paid)+'</td>'+
+        '<td>'+(p.overdue>0?'<span class="pill bad">'+p.overdue+' overdue</span>':'<span class="pill ghost">ok</span>')+'</td>'+
+        '</tr>';
+    }).join("");
+    $("prov-patients-table").innerHTML =
+      '<tr><th>Patient</th><th>MRN</th><th>Email</th><th style="text-align:right">Billed</th><th style="text-align:right">Outstanding</th><th>Status</th></tr>'+rows;
+  }
+  function renderPatientDetail(id){
+    var p = patientById(id);
+    if (!p) return;
+    var invRows = p.invoices.map(function(i){
+      return '<div class="card pad" style="margin-top:8px;"><div style="display:flex; justify-content:space-between;"><div><div style="font-weight:600;">'+i.num+' — '+i.desc+'</div><div class="muted">'+i.plan+'</div></div><div style="text-align:right;"><div style="font-weight:600;">'+fmt(i.outstanding)+'</div><div class="muted">of '+fmt(i.total)+'</div></div></div></div>';
+    }).join("");
+    var histRows = p.history.length ? p.history.map(function(h){
+      return '<li class="row"><div class="right"><span class="pill '+(h.cls==="ok"?"ok":"ghost")+'">'+h.t+'</span><span>'+h.d+'</span></div><span class="money" style="color:'+(h.a[0]==="-"? "#dc2626":"#059669")+'">'+h.a+'</span></li>';
+    }).join("") : '<p class="note">No transactions yet.</p>';
+    $("prov-patient-detail").innerHTML =
+      '<div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; align-items:flex-start;">'+
+        '<div><button class="btn ghost2 sm" id="pd-back">← All patients</button>'+
+        '<div style="font-weight:700; font-size:16px; margin-top:4px;">'+p.name+'</div>'+
+        '<div class="note">'+p.email+' · '+p.phone+' · '+p.externalId+'</div></div>'+
+        '<div style="display:flex; gap:8px; flex-wrap:wrap;">'+
+          '<a class="btn outline sm" href="tel:'+p.phone+'">📞 Call</a>'+
+          '<a class="btn outline sm" href="mailto:'+p.email+'">✉️ Email</a>'+
+          '<button class="btn outline sm" id="pd-magic">🔗 Email portal link</button>'+
+          '<button class="btn outline sm" id="pd-statement">📄 Email statement</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="kpis" style="margin-top:14px;">'+
+        kpi("Billed", fmt(p.billed), "") +
+        kpi("Paid", fmt(p.paid), "") +
+        kpi("Outstanding", fmt(p.billed-p.paid), "accent") +
+        (p.overdue>0 ? kpi("Overdue", String(p.overdue), "danger") : kpi("Plans", "1", "")) +
+      '</div>'+
+      (p.overdue>0 ? '<p class="pill bad" style="margin-top:12px;">⚠️ '+p.overdue+' overdue installment — reach out to resolve</p>' : '')+
+      '<div class="grid2" style="margin-top:14px;">'+
+        '<div><div style="font-weight:700; margin:10px 0 4px;">Invoices</div>'+invRows+
+        '<div style="font-weight:700; margin:12px 0 4px;">Payment history</div><ul class="list">'+histRows+'</ul></div>'+
+        '<div><div style="font-weight:700; margin:10px 0 4px;">Help resolve</div>'+
+          '<div class="card pad" style="margin-top:4px;">'+
+            '<div class="field"><label>Record manual payment ($)</label><input class="input" type="number" id="pd-pay" step="0.01" min="0" placeholder="100.00" /></div>'+
+            '<button class="btn primary block sm" id="pd-record">Record payment</button>'+
+            '<div class="field" style="margin-top:10px;"><label>Write-off / adjustment ($, negative)</label><input class="input" type="number" id="pd-adj" step="0.01" placeholder="-25.00" /></div>'+
+            '<button class="btn outline block sm" id="pd-adjust">Record adjustment</button>'+
+            '<p class="notice hidden" id="pd-notice" style="margin-top:10px;"></p>'+
+          '</div></div>'+
+      '</div>';
+    provState.patientId = id;
+    $("pd-back").addEventListener("click", function(){
+      $("prov-patient-detail").classList.add("hidden");
+      $("prov-patients-list").classList.remove("hidden");
+      provState.patientId = null;
+      fitScreens();
+    });
+    $("pd-magic").addEventListener("click", function(){ pdNotice("Portal link emailed to "+p.email+" ✓ (simulated)."); });
+    $("pd-statement").addEventListener("click", function(){ pdNotice("Statement emailed to "+p.email+" ✓ (simulated)."); });
+    $("pd-record").addEventListener("click", function(){
+      var amt = Math.round((parseFloat($("pd-pay").value)||0)*100);
+      if (amt<=0) return;
+      p.paid += amt;
+      p.history.unshift({t:"PAYMENT", d:"Manual payment (billing team)", a:"+"+fmt(amt), cls:"ok"});
+      if (p.history.length>8) p.history.pop();
+      pdNotice("Payment of "+fmt(amt)+" recorded to the append-only ledger ✓");
+      renderPatientDetail(id);
+    });
+    $("pd-adjust").addEventListener("click", function(){
+      var amt = Math.round((parseFloat($("pd-adj").value)||0)*100);
+      if (amt===0) return;
+      p.paid += -amt;
+      p.history.unshift({t:"ADJUSTMENT", d:"Write-off / adjustment", a:fmt(-amt), cls:"ghost"});
+      if (p.history.length>8) p.history.pop();
+      pdNotice("Adjustment of "+fmt(-amt)+" recorded ✓ (append-only).");
+      renderPatientDetail(id);
+    });
+    fitScreens();
+  }
+  function pdNotice(msg){
+    var n = $("pd-notice");
+    n.textContent = msg;
+    n.classList.remove("hidden");
+  }
+  window.__openPatient = function(id){
+    $("prov-patients-list").classList.add("hidden");
+    $("prov-patient-detail").classList.remove("hidden");
+    renderPatientDetail(id);
+  };
+
+  // provider tabs
+  var PROVIDER_TABS = [["dashboard","Dashboard"],["patients","Patients"],["import","Import CSV"],["settings","Plan settings"],["ledger","Ledger"]];
   function renderProviderTabs(){
     var bar=$("provider-tabs"); bar.innerHTML="";
     PROVIDER_TABS.forEach(function(t){
@@ -693,33 +857,14 @@ and give me a go-live checklist.</pre>
     });
   }
   function switchProviderTab(){
-    ["dashboard","import","settings","ledger-view"].forEach(function(id){
-      $("prov-"+id).classList.toggle("hidden", id!==provState.tab && !(id==="ledger-view" && provState.tab==="ledger"));
+    ["dashboard","patients","import","settings","ledger-view"].forEach(function(id){
+      var show = id==="ledger-view" ? provState.tab==="ledger" : id===provState.tab;
+      $("prov-"+id).classList.toggle("hidden", !show);
     });
+    fitScreens();
   }
-  function renderProvider(){
-    var collected = pState.paid.reduce(function(acc,i){return acc+amounts()[i];},0);
-    $("prov-kpis").innerHTML =
-      kpi("Outstanding", fmt(TOTAL-collected), "accent") +
-      kpi("Collected", fmt(collected), "") +
-      kpi("Billed", fmt(TOTAL), "") +
-      kpi("Overdue", "1", "danger");
-    $("prov-ledger").innerHTML =
-      row("PAYMENT","Marcus Chen","First installment","+$206.67", "ok") +
-      row("PAYMENT","Aisha Patel","Payment 1 of 6","+$143.34","ok") +
-      row("ADJUSTMENT","Emily Johnson","Insurance write-off","−$90.00","ghost");
-    $("prov-ledger-table").innerHTML =
-      '<tr><th>Type</th><th>Patient</th><th>Description</th><th style="text-align:right">Amount</th></tr>' +
-      '<tr><td><span class="pill ok">PAYMENT</span></td><td>Marcus Chen</td><td>First installment</td><td style="text-align:right;font-weight:600;">+$206.67</td></tr>' +
-      '<tr><td><span class="pill ok">PAYMENT</span></td><td>Aisha Patel</td><td>Payment 1 of 6</td><td style="text-align:right;font-weight:600;">+$143.34</td></tr>' +
-      '<tr><td><span class="pill ghost">ADJUSTMENT</span></td><td>Emily Johnson</td><td>Insurance write-off</td><td style="text-align:right;font-weight:600;">−$90.00</td></tr>';
-  }
-  function kpi(label,value,cls){ return '<div class="kpi"><div class="label">'+label+'</div><div class="value '+cls+'">'+value+'</div></div>'; }
-  function row(type,name,desc,amount,cls){
-    return '<li class="row"><div class="right"><span class="pill '+(cls==="ok"?"ok":"ghost")+'">'+type+'</span><span>'+name+'</span><span class="muted">'+desc+'</span></div><span class="money" style="color:'+(amount[0]==="-"? "#dc2626":"#059669")+'">'+amount+'</span></li>';
-  }
-
-  // ---- tabs (patient vs provider) ----
+  $("tab-patient").addEventListener("click", function(){ setTab("patient"); });
+  $("tab-provider").addEventListener("click", function(){ setTab("provider"); });
   function setTab(which){
     var p = which==="patient";
     $("tab-patient").classList.toggle("active", p);
@@ -728,10 +873,8 @@ and give me a go-live checklist.</pre>
     $("stage-provider").classList.toggle("hidden", p);
     fitScreens();
   }
-  $("tab-patient").addEventListener("click", function(){ setTab("patient"); });
-  $("tab-provider").addEventListener("click", function(){ setTab("provider"); });
 
-  // ---- settings inputs ----
+  // settings
   function readSettings(){
     settings.minCents = Math.max(1, Math.round((parseFloat($("s-min").value)||10)*100));
     settings.maxMonths = Math.max(1, parseInt($("s-months").value,10)||60);
@@ -739,57 +882,15 @@ and give me a go-live checklist.</pre>
     settings.windowDays = Math.max(1, parseInt($("s-window").value,10)||60);
     settings.allowCustom = $("s-custom").classList.contains("on");
     settings.allowDate = $("s-date").classList.contains("on");
-    var max = todayISO(settings.windowDays);
-    $("p-first-date").max = max;
-    renderOptions(); renderPatient();
+    $("p-first-date").max = todayISO(settings.windowDays);
+    $("p-first-date").classList.toggle("hidden", !settings.allowDate);
+    renderPatient();
   }
-  ["s-min","s-months","s-payments","s-window"].forEach(function(id){
-    $(id).addEventListener("input", readSettings);
-  });
+  ["s-min","s-months","s-payments","s-window"].forEach(function(id){ $(id).addEventListener("input", readSettings); });
   $("s-custom").addEventListener("click", function(){ this.classList.toggle("on"); readSettings(); });
   $("s-date").addEventListener("click", function(){ this.classList.toggle("on"); readSettings(); });
 
-  // ---- patient inputs ----
-  $("p-period-value").addEventListener("input", function(){ pState.value=Math.max(1, parseInt(this.value,10)||1); renderPatient(); });
-  $("p-count").addEventListener("input", function(){ pState.count=Math.max(1, parseInt(this.value,10)||1); renderPatient(); });
-  $("p-units").addEventListener("click", function(e){
-    var b=e.target.closest("button"); if(!b) return;
-    pState.unit=b.getAttribute("data-unit"); renderUnits(); renderPatient();
-  });
-  $("p-first-date").addEventListener("input", function(){ renderPatient(); });
-
-  // ---- payment ----
-  $("p-begin").addEventListener("click", function(){ openModal(); });
-  function openModal(){ $("modal").classList.add("open"); $("pay-form").classList.remove("hidden"); $("pay-processing").classList.add("hidden"); }
-  function closeModal(){ $("modal").classList.remove("open"); }
-  $("modal-close").addEventListener("click", closeModal);
-  $("modal").addEventListener("click", function(e){ if(e.target===$("modal")) closeModal(); });
-  function formatCard(v){ return v.replace(/\D/g,"").slice(0,16).replace(/(\d{4})(?=\d)/g,"$1 "); }
-  function formatExpiry(v){ var d=v.replace(/\D/g,"").slice(0,4); return d.length>2? d.slice(0,2)+" / "+d.slice(2):d; }
-  $("card-number").addEventListener("input", function(e){ e.target.value=formatCard(e.target.value); });
-  $("card-expiry").addEventListener("input", function(e){ e.target.value=formatExpiry(e.target.value); });
-  $("card-cvc").addEventListener("input", function(e){ e.target.value=e.target.value.replace(/\D/g,"").slice(0,4); });
-  $("card-zip").addEventListener("input", function(e){ e.target.value=e.target.value.replace(/\D/g,"").slice(0,10); });
-  $("btn-pay").addEventListener("click", function(){
-    var num=$("card-number").value.replace(/\s/g,"");
-    if (num.length!==16){ alert("Enter a 16-digit card number (try 4242 4242 4242 4242)."); return; }
-    $("pay-form").classList.add("hidden"); $("pay-processing").classList.remove("hidden");
-    setTimeout(function(){
-      pState.paid.push(0);
-      closeModal();
-      $("p-plan-step").classList.add("hidden");
-      $("p-success-step").classList.remove("hidden");
-      renderPatientBalance(); renderSchedule(); renderProvider();
-    }, 1500);
-  });
-  $("p-reset").addEventListener("click", function(){
-    pState = { count:3, unit:"MONTH", value:1, custom:false, paid:[] };
-    $("p-plan-step").classList.remove("hidden");
-    $("p-success-step").classList.add("hidden");
-    renderOptions(); renderPatient(); renderPatientBalance(); renderProvider();
-  });
-
-  // ---- provider integrations ----
+  // integrations
   $("prov-stripe").addEventListener("click", function(){
     provState.stripe=!provState.stripe;
     $("prov-stripe-status").textContent = provState.stripe ? "Connected — live key sk_live_••••" : "Not connected — mock mode";
@@ -811,8 +912,36 @@ and give me a go-live checklist.</pre>
       '<tr><td>Tom Okafor</td><td>INV-1005</td><td style="text-align:right">$150.00</td></tr>';
     this.innerHTML = "✓ Imported 5 patients &amp; 5 invoices";
   });
+  // add patient (inline form)
+  $("prov-add-patient").addEventListener("click", function(){
+    $("prov-add-form").classList.remove("hidden");
+    $("prov-patients-list").classList.add("hidden");
+    $("pa-notice").classList.add("hidden");
+    fitScreens();
+  });
+  $("pa-cancel").addEventListener("click", function(){
+    $("prov-add-form").classList.add("hidden");
+    $("prov-patients-list").classList.remove("hidden");
+    fitScreens();
+  });
+  $("pa-save").addEventListener("click", function(){
+    var name = $("pa-name").value.trim();
+    if (!name) { $("pa-notice").textContent = "A name is required."; $("pa-notice").classList.remove("hidden"); return; }
+    var email = $("pa-email").value.trim() || "new@example.com";
+    var phone = $("pa-phone").value.trim() || "555-0000";
+    var amt = Math.max(0, Math.round((parseFloat($("pa-amount").value)||0)*100));
+    var desc = $("pa-desc").value.trim() || "Office visit";
+    var p = { id: nextPatientId++, name: name, email: email, phone: phone, externalId: "MRN-"+nextPatientId, billed: amt, paid: 0, overdue: 0,
+      invoices: amt>0 ? [{ num:"INV-"+(1000+nextPatientId), desc: desc, total: amt, outstanding: amt, plan:"—" }] : [],
+      history: [] };
+    PATIENTS.push(p);
+    $("prov-add-form").classList.add("hidden");
+    $("prov-patients-list").classList.remove("hidden");
+    renderPatientsTable();
+    window.__openPatient(p.id);
+  });
 
-  // ---- copy buttons ----
+  // copy buttons
   document.querySelectorAll(".copy").forEach(function(btn){
     btn.addEventListener("click", function(){
       var el = $(btn.getAttribute("data-copy"));
@@ -823,12 +952,13 @@ and give me a go-live checklist.</pre>
     });
   });
 
-  // ---- init ----
+  // init
   $("p-first-date").value = todayISO();
   $("p-first-date").min = todayISO();
   $("p-first-date").max = todayISO(settings.windowDays);
-  renderOptions(); renderPatient(); renderPatientBalance();
+  renderPatient(); renderSchedule(); renderPatientBalance();
   renderProviderTabs(); switchProviderTab(); renderProvider();
+  window.addEventListener("load", fitScreens);
   window.addEventListener("resize", fitScreens);
   setTab("patient");
 })();
