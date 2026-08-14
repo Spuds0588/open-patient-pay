@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Phone, Mail, Printer, Receipt, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -8,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function PrintButton() {
   return (
-    <Button variant="outline" size="sm" onClick={() => window.print()}>
-      🖨️ Print / Save as PDF
+    <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-1.5">
+      <Printer className="h-4 w-4" /> Print / Save as PDF
     </Button>
   );
 }
@@ -30,13 +31,17 @@ export function ContactBilling({
       </CardHeader>
       <CardContent className="flex flex-wrap gap-2">
         {billingContact.phone && (
-          <Button asChild variant="outline" size="sm">
-            <a href={`tel:${billingContact.phone}`}>📞 Call billing</a>
+          <Button asChild variant="outline" size="sm" className="gap-1.5">
+            <a href={`tel:${billingContact.phone}`}>
+              <Phone className="h-4 w-4" /> Call billing
+            </a>
           </Button>
         )}
         {billingContact.email && (
-          <Button asChild variant="outline" size="sm">
-            <a href={`mailto:${billingContact.email}`}>✉️ Email billing</a>
+          <Button asChild variant="outline" size="sm" className="gap-1.5">
+            <a href={`mailto:${billingContact.email}`}>
+              <Mail className="h-4 w-4" /> Email billing
+            </a>
           </Button>
         )}
       </CardContent>
@@ -143,11 +148,23 @@ export function EmailActions({
 
   return (
     <div className="flex flex-wrap gap-2">
-      <Button variant="outline" size="sm" onClick={() => send("receipt", "Receipt")} disabled={busy !== null}>
-        {busy === "receipt" ? "Sending…" : "🧾 Email receipt"}
+      <Button variant="outline" size="sm" className="gap-1.5" onClick={() => send("receipt", "Receipt")} disabled={busy !== null}>
+        {busy === "receipt" ? (
+          "Sending…"
+        ) : (
+          <>
+            <Receipt className="h-4 w-4" /> Email receipt
+          </>
+        )}
       </Button>
-      <Button variant="outline" size="sm" onClick={() => send("statement", "Statement")} disabled={busy !== null}>
-        {busy === "statement" ? "Sending…" : "📄 Email statement"}
+      <Button variant="outline" size="sm" className="gap-1.5" onClick={() => send("statement", "Statement")} disabled={busy !== null}>
+        {busy === "statement" ? (
+          "Sending…"
+        ) : (
+          <>
+            <FileText className="h-4 w-4" /> Email statement
+          </>
+        )}
       </Button>
       {notice && <p className="w-full text-xs text-muted-foreground">{notice}</p>}
       {error && <p className="w-full text-xs text-destructive">{error}</p>}

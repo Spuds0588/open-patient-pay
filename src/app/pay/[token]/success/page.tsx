@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { reconcileCheckoutSession } from "@/lib/payments";
@@ -24,8 +25,8 @@ export default async function SuccessPage({
         <CardContent className="p-8 text-center">
           {ok ? (
             <>
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-2xl">
-                ✓
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100">
+                <Check className="h-7 w-7 text-emerald-700" />
               </div>
               <h1 className="text-2xl font-bold">Payment received</h1>
               <p className="mt-2 text-muted-foreground">
@@ -34,8 +35,8 @@ export default async function SuccessPage({
             </>
           ) : (
             <>
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-2xl">
-                ⚠️
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100">
+                <TriangleAlert className="h-7 w-7 text-amber-700" />
               </div>
               <h1 className="text-2xl font-bold">We couldn&apos;t confirm that payment</h1>
               <p className="mt-2 text-muted-foreground">

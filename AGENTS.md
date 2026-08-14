@@ -31,6 +31,9 @@ High-level features are gated by env vars in `src/lib/config.ts` (e.g. `ENABLE_C
 - TypeScript, strict mode on. Run `npm run typecheck` before finishing any change.
 - Tests live next to the code (`*.test.ts`) and run with `npm test`. Pure core logic should have tests; add one whenever you change schedule/ledger/money math.
 - UI uses Tailwind + the primitives in `src/components/ui/`. Prefer composing existing components over adding dependencies.
+- **Icons**: use `lucide-react` (already a dependency) — never emojis in UI chrome.
+- **Actions**: record pages expose a gallery of action buttons (`RecordActions` in `src/components/admin/record-actions.tsx`) that open `Modal`s for extra inputs. Don't build inline forms next to records.
+- **Theming**: never hardcode a brand name or accent. Pull from `config.appName` / `config.appAccent` (see `src/components/theme-provider.tsx` and `src/app/globals.css`).
 - Follow the existing file/folder structure; do not reorganize wholesale.
 
 ## Verification checklist

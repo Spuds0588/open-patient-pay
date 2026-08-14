@@ -45,7 +45,7 @@ export default function LoginPage() {
         <CardContent>
           {done ? (
             <div className="space-y-3 text-sm">
-              <p className="text-emerald-700">If an account exists for that email, a link is on its way. ✉️</p>
+              <p className="text-emerald-700">If an account exists for that email, a link is on its way.</p>
               <p className="text-muted-foreground">
                 The link expires in a few minutes and works only once. (Your clinic may not have
                 email connected yet — in that case the link appears below.)

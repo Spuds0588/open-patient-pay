@@ -15,6 +15,20 @@ An open-source, self-hosted billing and installment engine for independent medic
 - **Installment engine** — pure, stateless logic that splits a balance into exact installments (integer cents, remainder front-loaded) and recalculates future installments when a balance is adjusted mid-plan. Supports presets (3/6/12 monthly, weekly, bi-weekly) plus **patient-defined periods** (days/weeks/months with a custom interval and count).
 - **Provider-controlled limits** — cap the number of payments, the plan length, and the minimum payment, gate custom periods, and optionally let patients choose their first-payment date.
 - **Adapters** — `PaymentAdapter` and `DataIngestionAdapter` interfaces isolate Stripe and CSV behind swappable contracts (swap in a FHIR feed or another processor later).
+- **White-label theming** — the entire portal (patient checkout and admin) re-themes to match the practice. Set `APP_NAME`, `APP_SHORT_NAME`, and an HSL `APP_ACCENT`, and the logo, name, and accent color follow. The demo has a live theme switcher that shows this off.
+
+---
+
+## White-labeling / theming
+
+The portals are branded to match the provider, not the platform. Set these in `.env` (or in the Docker environment):
+
+| Variable | Example | Purpose |
+| --- | --- | --- |
+| `APP_NAME` | `Lakeside Family Medicine` | Clinic name shown in the header & statement |
+| `APP_SHORT_NAME` | `LF` | Logo initials in the header mark |
+| `APP_ACCENT` | `174 68% 34%` | HSL accent used for primary buttons/links (teal, blue, purple, rose…) |
+| `APP_ACCENT_SOFT` | `210 40% 96%` | Soft secondary surface tint |
 
 ---
 
@@ -131,6 +145,7 @@ See [`.env.example`](.env.example). Key variables:
 | Variable | Purpose |
 | --- | --- |
 | `DATABASE_URL` | Postgres connection string |
+| `APP_NAME` / `APP_SHORT_NAME` / `APP_ACCENT` | White-label branding (see above) |
 | `APP_BASE_URL` | Used to build checkout success/cancel URLs |
 | `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` / `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Live payments (empty → mock mode) |
 | `MOCK_PAYMENTS` | Force mock payments even when a Stripe key is set |

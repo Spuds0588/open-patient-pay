@@ -28,7 +28,14 @@ function units(name: string, fallback: PeriodUnit[]): PeriodUnit[] {
 }
 
 export const config = {
+  // Branding — the portal is themed to match the provider (see README).
   appName: process.env.APP_NAME ?? "Open Patient Pay",
+  /** Short name used in the logo mark (defaults to initials). */
+  appShortName: process.env.APP_SHORT_NAME ?? "OP",
+  /** Primary accent as an HSL triple, e.g. "221 83% 53%". */
+  appAccent: process.env.APP_ACCENT ?? "221 83% 53%",
+  /** Secondary/clinic color for subtle surfaces, e.g. "210 40% 96%". */
+  appAccentSoft: process.env.APP_ACCENT_SOFT ?? "210 40% 96%",
 
   // Open-core feature toggles.
   enableClinicRegistration: bool("ENABLE_CLINIC_REGISTRATION", false),

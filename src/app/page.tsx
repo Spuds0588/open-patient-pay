@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Palette } from "lucide-react";
 import { prisma } from "@/db/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -63,6 +64,13 @@ export default async function HomePage() {
             <Badge variant="outline" className="mb-4">
               Open source · Self-hosted · Apache-2.0
             </Badge>
+            <div className="mb-6 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
+              <Palette className="h-3.5 w-3.5" />
+              <span>
+                White-labeled for your practice — change <code>APP_NAME</code> and{" "}
+                <code>APP_ACCENT</code> and the whole portal re-themes.
+              </span>
+            </div>
             <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">
               Dignified medical billing,{" "}
               <span className="text-primary">without the predatory fees.</span>

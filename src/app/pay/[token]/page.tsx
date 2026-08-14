@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Lock, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { config } from "@/lib/config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlanSelector, PayInstallmentButton } from "@/components/pay/actions";
 import { ContactBilling, EmailActions, RemindersToggle } from "@/components/pay/portal-actions";
@@ -39,9 +41,9 @@ export default async function PatientPortalPage({
         <div className="mx-auto flex h-16 max-w-2xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
-              OP
+              {config.appShortName.slice(0, 2).toUpperCase()}
             </span>
-            <span className="font-semibold">Open Patient Pay</span>
+            <span className="font-semibold">{config.appName}</span>
           </div>
           <span className="text-sm text-muted-foreground">{data.name}</span>
         </div>
@@ -49,7 +51,7 @@ export default async function PatientPortalPage({
 
       <main className="mx-auto max-w-2xl space-y-6 px-4 py-8">
         <div>
-          <p className="text-sm text-muted-foreground">Hello, {data.name.split(" ")[0]} 👋</p>
+          <p className="text-sm text-muted-foreground">Hello, {data.name.split(" ")[0]}</p>
           {(data.email || data.phone) && (
             <p className="text-xs text-muted-foreground">
               {data.email}
@@ -61,6 +63,10 @@ export default async function PatientPortalPage({
           <p className="mt-2 text-muted-foreground">
             Review your charges below and choose a plan that works for you. No hidden convenience
             fees — ever.
+          </p>
+          <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+            <Lock className="h-3 w-3" /> Secured by Stripe — your card details never touch our
+            server.
           </p>
         </div>
 
@@ -173,7 +179,9 @@ export default async function PatientPortalPage({
           <CardContent className="space-y-3">
             <EmailActions patientToken={token} />
             <Button asChild variant="outline" size="sm">
-              <Link href={`/pay/${token}/statement`}>🖨️ Open printable statement</Link>
+              <Link href={`/pay/${token}/statement`} className="flex items-center gap-1.5">
+                <Printer className="h-4 w-4" /> Open printable statement
+              </Link>
             </Button>
           </CardContent>
         </Card>

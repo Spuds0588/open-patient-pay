@@ -12,9 +12,10 @@
     --muted: #f1f5f9;
     --muted-fg: #64748b;
     --border: #e2e8f0;
-    --primary: #2563eb;
+    /* Clinic accent — the demo switches this to show white-labeling. */
+    --primary: #0d9488;
     --primary-fg: #ffffff;
-    --primary-soft: #eff6ff;
+    --primary-soft: #ccfbf1;
     --success: #d1fae5;
     --success-fg: #065f46;
     --danger: #fee2e2;
@@ -25,6 +26,24 @@
     --shadow: 0 1px 3px rgba(15,23,42,.08), 0 12px 32px rgba(15,23,42,.08);
     --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
+  /* Theme switcher chips + modal overlay */
+  .theme-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:14px 0 0; }
+  .theme-chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); background:#fff; border-radius:999px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; }
+  .theme-chip.sel { outline:2px solid var(--primary); outline-offset:1px; }
+  .theme-swatch { width:14px; height:14px; border-radius:50%; display:inline-block; }
+  .modal-overlay { position:fixed; inset:0; z-index:200; background:rgba(15,23,42,.45); display:flex; align-items:center; justify-content:center; padding:16px; }
+  .modal-card { background:#fff; border-radius:14px; box-shadow:0 24px 64px rgba(15,23,42,.28); width:100%; max-width:400px; max-height:86vh; overflow-y:auto; }
+  .modal-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:16px 18px 0; }
+  .modal-head h4 { margin:0; font-size:15px; }
+  .modal-head .muted { font-size:12px; color:var(--muted-fg); margin-top:2px; }
+  .modal-body { padding:14px 18px 18px; }
+  .modal-close { border:0; background:var(--muted); color:var(--muted-fg); width:26px; height:26px; border-radius:8px; cursor:pointer; font-size:14px; line-height:1; }
+  .modal-close:hover { background:var(--border); color:var(--fg); }
+  .act-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
+  .act-btn { display:flex; align-items:center; gap:8px; border:1px solid var(--border); background:#fff; border-radius:9px; padding:9px 11px; font-size:12.5px; font-weight:600; color:var(--fg); cursor:pointer; text-align:left; transition:.12s; }
+  .act-btn:hover { border-color:var(--primary); background:var(--primary-soft); color:var(--primary); }
+  .act-btn svg { flex:none; }
+  .act-btn.danger:hover { border-color:var(--danger-fg); background:var(--danger); color:var(--danger-fg); }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
@@ -186,11 +205,11 @@
     <h1>Dignified medical billing,<br /><span style="color:var(--primary)">without the predatory fees.</span></h1>
     <p class="lead">Scroll to actually <strong>use</strong> the patient and provider portals below — set up a plan, pay with a pre-filled Stripe checkout, dig into a patient&apos;s history, and connect an EHR. Then see how a practice spins it up in one command.</p>
     <div class="pill-row">
-      <span class="chip-static">💳 Stripe</span>
-      <span class="chip-static">🩺 FHIR R4</span>
-      <span class="chip-static">🐘 Postgres</span>
-      <span class="chip-static">🐳 Docker</span>
-      <span class="chip-static">⚛️ Next.js</span>
+      <span class="chip-static">Stripe</span>
+      <span class="chip-static">FHIR R4</span>
+      <span class="chip-static">Postgres</span>
+      <span class="chip-static">Docker</span>
+      <span class="chip-static">Next.js</span>
     </div>
     <p style="margin-top:26px; color:var(--muted-fg); font-size:14px;">↓ keep scrolling — it&apos;s interactive</p>
   </div>
@@ -205,8 +224,17 @@
     </div>
     <div class="center" style="margin-bottom:10px;">
       <div class="device-tabs">
-        <button id="tab-patient" class="active">👤 Patient experience</button>
-        <button id="tab-provider">🏥 Provider dashboard</button>
+        <button id="tab-patient" class="active">Patient experience</button>
+        <button id="tab-provider">Provider dashboard</button>
+      </div>
+    </div>
+    <div class="center" style="margin-bottom:6px;">
+      <p class="note" style="margin:0;">White-labeled for the clinic — pick a practice theme:</p>
+      <div class="theme-row" id="theme-row">
+        <button class="theme-chip sel" data-theme="teal" onclick="setClinicTheme('teal')"><span class="theme-swatch" style="background:#0d9488;"></span> Lakeside Family Med</button>
+        <button class="theme-chip" data-theme="blue" onclick="setClinicTheme('blue')"><span class="theme-swatch" style="background:#2563eb;"></span> Harborview Health</button>
+        <button class="theme-chip" data-theme="violet" onclick="setClinicTheme('violet')"><span class="theme-swatch" style="background:#7c3aed;"></span> Willow Creek Dental</button>
+        <button class="theme-chip" data-theme="rose" onclick="setClinicTheme('rose')"><span class="theme-swatch" style="background:#e11d48;"></span> Magnolia Pediatrics</button>
       </div>
     </div>
 
@@ -215,17 +243,17 @@
       <div class="browser" style="max-width:430px; margin:0 auto;">
         <div class="browser-bar">
           <div class="dots"><span></span><span></span><span></span></div>
-          <div class="url">pay.openpatientpay.com/pay/&lt;token&gt;</div>
+          <div class="url clinic-url">pay.lakesidefamily.com/pay/&lt;token&gt;</div>
         </div>
         <div class="shell" data-width="390">
           <div class="screen" style="width:390px; height:760px;">
-            <div class="phone-status"><span>9:41</span><span>🔒 pay.openpatientpay.com</span></div>
+            <div class="phone-status"><span>9:41</span><span>🔒 <span class="clinic-url2">pay.lakesidefamily.com</span></span></div>
             <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 16px; border-bottom:1px solid var(--border); background:#fff;">
-              <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;"><span class="logo" style="width:26px;height:26px;font-size:11px;">OP</span> Open Patient Pay</div>
+              <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;"><span class="logo clinic-short" style="width:26px;height:26px;font-size:11px;">LF</span><span class="clinic-name">Lakeside Family Medicine</span></div>
               <span style="font-size:12px; color:var(--muted-fg);">Marcus Chen</span>
             </div>
             <div style="padding:14px 16px 44px; background:#f8fafc;">
-              <p style="font-size:12px; color:var(--muted-fg); margin:0;">Hello, Marcus 👋 · marcus@example.com</p>
+              <p style="font-size:12px; color:var(--muted-fg); margin:0;">Hello, Marcus · marcus@example.com</p>
               <h3 style="margin:2px 0 8px; font-size:20px;">Your medical bill</h3>
               <div class="balance">
                 <div class="label">Total balance</div>
@@ -294,18 +322,18 @@
                   <button class="toggle on" id="p-reminders"></button>
                 </div>
                 <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
-                  <button class="btn outline sm" id="p-email-receipt">🧾 Email receipt</button>
-                  <button class="btn outline sm" id="p-email-statement">📄 Email statement</button>
+                  <button class="btn outline sm" id="p-email-receipt">Receipt</button>
+                  <button class="btn outline sm" id="p-email-statement">Statement</button>
                 </div>
                 <p class="notice hidden" id="p-email-notice" style="margin-top:8px;"></p>
                 <div style="border-top:1px solid var(--border); margin-top:12px; padding-top:10px;">
                   <div style="font-size:12px; color:var(--muted-fg); margin-bottom:6px;">Questions about your bill?</div>
                   <div style="display:flex; gap:8px;">
-                    <a class="btn outline sm" href="tel:+15550141">📞 Call billing</a>
-                    <a class="btn outline sm" href="mailto:billing@clinic.com">✉️ Email billing</a>
+                    <a class="btn outline sm" href="tel:+15550141">Call billing</a>
+                    <a class="btn outline sm" href="mailto:billing@clinic.com">Email billing</a>
                   </div>
                 </div>
-                <button class="btn ghost2 block sm" id="p-reset" style="margin-top:10px;">↺ Reset demo</button>
+                <button class="btn ghost2 block sm" id="p-reset" style="margin-top:10px;">Reset demo</button>
               </div>
             </div>
           </div>
@@ -318,18 +346,19 @@
       <div class="browser">
         <div class="browser-bar">
           <div class="dots"><span></span><span></span><span></span></div>
-          <div class="url">admin.openpatientpay.com</div>
+          <div class="url clinic-url2">admin.lakesidefamily.com</div>
         </div>
         <div class="shell" data-width="1100">
           <div class="screen" style="width:1100px; height:720px;">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid var(--border); background:#fff;">
               <div style="display:flex; align-items:center; gap:10px; font-weight:700;">
-                <span class="logo">OP</span> Open Patient Pay
+                <span class="logo clinic-short">LF</span><span class="clinic-name">Lakeside Family Medicine</span>
                 <span style="background:var(--muted); color:var(--muted-fg); font-size:11px; padding:2px 8px; border-radius:999px;">Admin</span>
               </div>
               <div class="tabbar" style="border:0; padding:0;" id="provider-tabs"></div>
             </div>
             <div style="padding:20px; background:#f8fafc;">
+              <p class="notice hidden" id="prov-notice-bar" style="margin-bottom:12px;"></p>
               <div id="prov-dashboard">
                 <div class="kpis" id="prov-kpis"></div>
                 <div class="grid2" style="margin-top:16px;">
@@ -474,28 +503,28 @@ docker compose exec app \
       <div class="card pad">
         <h3 style="margin:0 0 12px;">Hosting providers</h3>
         <div class="logos">
-          <span class="logo-chip">🖥️ Bare-metal VPS</span>
-          <span class="logo-chip">🇩🇪 Hetzner</span>
-          <span class="logo-chip">🌊 DigitalOcean</span>
-          <span class="logo-chip">☁️ AWS Lightsail</span>
-          <span class="logo-chip">🪰 Fly.io</span>
-          <span class="logo-chip">▲ Render</span>
-          <span class="logo-chip">🚂 Railway</span>
-          <span class="logo-chip">🛠️ Coolify</span>
-          <span class="logo-chip">🐳 Any Docker host</span>
+          <span class="logo-chip">Bare-metal VPS</span>
+          <span class="logo-chip">Hetzner</span>
+          <span class="logo-chip">DigitalOcean</span>
+          <span class="logo-chip">AWS Lightsail</span>
+          <span class="logo-chip">Fly.io</span>
+          <span class="logo-chip">Render</span>
+          <span class="logo-chip">Railway</span>
+          <span class="logo-chip">Coolify</span>
+          <span class="logo-chip">Any Docker host</span>
         </div>
         <p class="note" style="margin-top:14px;">Postgres runs in a named Docker volume, so a container crash never costs you data — and self-hosters keep 100% of their PHI.</p>
       </div>
       <div class="card pad">
         <h3 style="margin:0 0 12px;">Payment processors &amp; EHRs</h3>
         <div class="logos">
-          <span class="logo-chip">💳 Stripe <span class="sub">built-in</span></span>
-          <span class="logo-chip">▣ Square <span class="sub">via adapter</span></span>
-          <span class="logo-chip">🅰 Adyen <span class="sub">via adapter</span></span>
-          <span class="logo-chip">🅱 Braintree <span class="sub">via adapter</span></span>
-          <span class="logo-chip">🩺 FHIR R4 <span class="sub">Epic · Cerner · athena</span></span>
-          <span class="logo-chip">📄 CSV <span class="sub">any practice mgmt export</span></span>
-          <span class="logo-chip">✉️ SMTP <span class="sub">magic links · receipts · reminders</span></span>
+          <span class="logo-chip">Stripe <span class="sub">built-in</span></span>
+          <span class="logo-chip">Square <span class="sub">via adapter</span></span>
+          <span class="logo-chip">Adyen <span class="sub">via adapter</span></span>
+          <span class="logo-chip">Braintree <span class="sub">via adapter</span></span>
+          <span class="logo-chip">FHIR R4 <span class="sub">Epic · Cerner · athena</span></span>
+          <span class="logo-chip">CSV <span class="sub">any practice mgmt export</span></span>
+          <span class="logo-chip">SMTP <span class="sub">magic links · receipts · reminders</span></span>
         </div>
         <p class="note" style="margin-top:14px;">The <code>PaymentAdapter</code> and <code>DataIngestionAdapter</code> interfaces mean a new processor or EHR feed is a drop-in module, not a rewrite.</p>
       </div>
@@ -567,6 +596,29 @@ and give me a go-live checklist.</pre>
     return out;
   }
   function fmt(c){ var a=Math.abs(Math.round(c)), d=Math.floor(a/100), r=a%100; return (c<0?"-":"")+"$"+d.toLocaleString("en-US")+"."+String(r).padStart(2,"0"); }
+
+  // ---- minimal SVG icon set (replaces emoji everywhere) ----
+  var I = {
+    phone:  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+    mail:   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>',
+    file:   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>',
+    print:  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>',
+    receipt:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>',
+    lock:   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+    check:  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    bell:   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+    note:   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"/><path d="M15 3v6h6"/></svg>',
+    user:   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    money:  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M16 8.5c-.6-.6-1.8-1.5-4-1.5s-4 .9-4 2.5 1.5 2 4 2.5 4 1 4 2.5-1.8 2.5-4 2.5-3.4-.9-4-1.5"/></svg>',
+    shield: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>',
+    refresh:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>',
+    plus:   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+    alert:  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+    calendar:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
+    refresh_cw:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M21 8a9 9 0 1 0-2.94 6.3"/></svg>',
+    calendar_plus:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M12 14v6"/><path d="M9 17h6"/></svg>'
+  };
+  function ic(name, cls){ return (I[name]||"").replace('<svg ', '<svg class="'+(cls||'')+'" '); }
   function addMonthsClamped(date, months){
     var y=date.getUTCFullYear(), m=date.getUTCMonth(), day=date.getUTCDate();
     var t=new Date(Date.UTC(y, m+months, 1));
@@ -588,12 +640,37 @@ and give me a go-live checklist.</pre>
     return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   }
   function fmtDate(d){ return d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}); }
+  function today(){ return new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}); }
 
   var TOTAL = 124000;
   var UNIT_LABEL = { DAY:"day", WEEK:"week", MONTH:"month" };
   var settings = { minCents:1000, maxMonths:60, maxPayments:48, windowDays:60, allowCustom:true, allowDate:true };
   var pState = { unit:"MONTH", value:1, count:6, payInFull:false, paid:[], step:"plan" };
   var provState = { stripe:false, fhir:false, tab:"dashboard", patientId:null, filter:"all", selected:{} };
+
+  // ---- clinic white-label theming (matches APP_NAME / APP_ACCENT in the real app) ----
+  var CLINICS = {
+    teal:   { primary:"#0d9488", soft:"#ccfbf1", name:"Lakeside Family Medicine", short:"LF", url:"pay.lakesidefamily.com" },
+    blue:   { primary:"#2563eb", soft:"#eff6ff", name:"Harborview Health", short:"HH", url:"pay.harborviewhealth.com" },
+    violet: { primary:"#7c3aed", soft:"#f5f3ff", name:"Willow Creek Dental", short:"WC", url:"pay.willowcreekdental.com" },
+    rose:   { primary:"#e11d48", soft:"#fff1f2", name:"Magnolia Pediatrics", short:"MP", url:"pay.magnoliapeds.com" }
+  };
+  var clinic = "teal";
+  function setClinicTheme(key){
+    if (!CLINICS[key]) return;
+    clinic = key;
+    var c = CLINICS[key];
+    document.documentElement.style.setProperty("--primary", c.primary);
+    document.documentElement.style.setProperty("--primary-soft", c.soft);
+    document.querySelectorAll(".theme-chip").forEach(function(ch){
+      ch.classList.toggle("sel", ch.getAttribute("data-theme")===key);
+    });
+    document.querySelectorAll(".clinic-name").forEach(function(el){ el.textContent = c.name; });
+    document.querySelectorAll(".clinic-short").forEach(function(el){ el.textContent = c.short; });
+    document.querySelectorAll(".clinic-url").forEach(function(el){ el.textContent = c.url; });
+    document.querySelectorAll(".clinic-url2").forEach(function(el){ el.textContent = c.url; });
+  }
+  window.setClinicTheme = setClinicTheme;
 
   // ---- scaled screens: fixed design viewport, scrolls INSIDE the frame ----
   function fitScreens(){
@@ -770,9 +847,10 @@ and give me a go-live checklist.</pre>
   function kpiClick(filter){ provState.filter = filter; provState.tab = "patients"; renderProviderTabs(); switchProviderTab(); renderPatientsTable(); }
   window.kpiClick = kpiClick;
   function renderProvider(){
-    var paid = pState.paid.reduce(function(acc,i){return acc+splitEvenly(TOTAL, pState.payInFull?1:pState.count)[i];},0);
-    var outTotal = 0, overdueN = 0, noPlanN = 0, collN = 0;
+    var billedTotal = 0, paidTotal = 0, outTotal = 0, overdueN = 0, noPlanN = 0, collN = 0;
     PATIENTS.forEach(function(p){
+      billedTotal += p.billed;
+      paidTotal += p.paid;
       outTotal += patientOutstanding(p);
       if (p.overdue>0) overdueN++;
       if (patientOutstanding(p)>0 && !p.hasPlan) noPlanN++;
@@ -780,8 +858,8 @@ and give me a go-live checklist.</pre>
     });
     $("prov-kpis").innerHTML =
       kpiBtn("Outstanding", fmt(outTotal), "accent", "outstanding") +
-      kpiBtn("Collected", fmt(paid), "", null) +
-      kpiBtn("Billed", fmt(TOTAL), "", "all") +
+      kpiBtn("Collected", fmt(paidTotal), "", null) +
+      kpiBtn("Billed", fmt(billedTotal), "", "all") +
       kpiBtn("Overdue", String(overdueN), "danger", "overdue") +
       kpiBtn("No plan · due", String(noPlanN), "", "no-plan") +
       kpiBtn("In collections", String(collN), "danger", "collections");
@@ -830,7 +908,7 @@ and give me a go-live checklist.</pre>
         '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">'+
           '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+filters+'</div>'+
           '<div style="display:flex;gap:6px;"><button type="button" class="btn outline sm" onclick="toggleAllSel()">Toggle all</button>'+
-          '<button type="button" class="btn primary sm" id="bulk-email-btn">📄 Email selected ('+Object.keys(provState.selected).length+')</button></div>'+
+          '<button type="button" class="btn primary sm" id="bulk-email-btn">'+ic("mail")+' Email selected ('+Object.keys(provState.selected).length+')</button></div>'+
         '</div>'+
       '</th></tr>'+
       '<tr><th></th><th>Patient</th><th>MRN</th><th>Email</th><th style="text-align:right">Outstanding</th><th>Status</th></tr>'+rows;
@@ -862,8 +940,45 @@ and give me a go-live checklist.</pre>
     });
     provState.selected = {};
     renderPatientsTable();
-    alert("📄 "+n+" statement(s) emailed ✓ (simulated). Check a patient's record for the email history.");
+    alert(n+" statement(s) emailed ✓ (simulated). Check a patient's record for the email history.");
   }
+  // ---- modal system (Salesforce-style action dialogs) ----
+  var modalHandlers = {};
+  function openModal(title, desc, bodyHtml, confirmText, confirmCb, confirmCls){
+    var overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.innerHTML =
+      '<div class="modal-card">'+
+        '<div class="modal-head"><div><h4>'+title+'</h4><div class="muted">'+desc+'</div></div>'+
+        '<button class="modal-close" type="button">×</button></div>'+
+        '<div class="modal-body">'+bodyHtml+
+          '<div style="display:flex;gap:8px;margin-top:14px;">'+
+            '<button class="btn primary sm" id="modal-confirm" type="button">'+confirmText+'</button>'+
+            '<button class="btn outline sm" id="modal-cancel" type="button">Cancel</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    overlay.addEventListener("mousedown", function(e){ if (e.target===overlay) overlay.remove(); });
+    overlay.querySelector(".modal-close").addEventListener("click", function(){ overlay.remove(); });
+    overlay.querySelector("#modal-cancel").addEventListener("click", function(){ overlay.remove(); });
+    var confirmBtn = overlay.querySelector("#modal-confirm");
+    if (confirmCls) confirmBtn.classList.add(confirmCls);
+    confirmBtn.addEventListener("click", function(){
+      confirmCb && confirmCb(function(msg){ overlay.remove(); noticeBar(msg); renderPatientDetail(provState.patientId); });
+    });
+    document.body.appendChild(overlay);
+  }
+  var noticeBarTimer = null;
+  function noticeBar(msg){
+    var bar = $("prov-notice-bar");
+    if (!bar) return;
+    bar.textContent = msg;
+    bar.classList.remove("hidden");
+    clearTimeout(noticeBarTimer);
+    noticeBarTimer = setTimeout(function(){ bar.classList.add("hidden"); }, 3600);
+  }
+  function esc(v){ return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
   function renderPatientDetail(id){
     var p = patientById(id);
     if (!p) return;
@@ -874,62 +989,63 @@ and give me a go-live checklist.</pre>
       return '<li class="row"><div class="right"><span class="pill '+(h.cls==="ok"?"ok":"ghost")+'">'+h.t+'</span><span>'+h.d+'</span></div><span class="money" style="color:'+(h.a[0]==="-"? "#dc2626":"#059669")+'">'+h.a+'</span></li>';
     }).join("") : '<p class="note">No transactions yet.</p>';
     var noteRows = (p.notes||[]).length ? p.notes.map(function(n){
-      return '<li class="row" style="align-items:flex-start;"><div class="right"><span class="pill '+(n.k==="CALL"?"warn":n.k==="COLLECTIONS"?"bad":"ghost")+'">'+(n.k==="CALL"?"📞 Call":n.k==="COLLECTIONS"?"Collections":n.k==="INSURANCE"?"Insurance":"Note")+'</span><span>'+n.d+'</span></div><span class="muted" style="font-size:11px;">'+n.who+' · '+n.at+'</span></li>';
+      return '<li class="row" style="align-items:flex-start;"><div class="right"><span class="pill '+(n.k==="CALL"?"warn":n.k==="COLLECTIONS"?"bad":"ghost")+'">'+(n.k==="CALL"?ic("phone")+" Call":n.k==="COLLECTIONS"?ic("shield")+" Collections":n.k==="INSURANCE"?ic("refresh")+" Insurance":ic("note")+" Note")+'</span><span>'+n.d+'</span></div><span class="muted" style="font-size:11px;">'+n.who+' · '+n.at+'</span></li>';
     }).join("") : '<p class="note">No notes or calls logged yet.</p>';
     var emailRows = (p.emails||[]).length ? p.emails.map(function(e){
-      return '<li class="row"><div class="right"><span class="pill '+(e.st==="sent"?"ok":"ghost")+'">'+e.k.replace(/_/g," ")+'</span><span>'+e.s+'</span></div><span class="muted" style="font-size:11px;">'+e.at+'</span></li>';
+      return '<li class="row"><div class="right"><span class="pill '+(e.st==="sent"?"ok":"ghost")+'">'+ic("mail")+' '+e.k.replace(/_/g," ")+'</span><span>'+e.s+'</span></div><span class="muted" style="font-size:11px;">'+e.at+'</span></li>';
     }).join("") : '<p class="note">No emails sent yet.</p>';
+
+    var inColl = p.arStatus==="IN_COLLECTIONS";
+    var record = p;
     $("prov-patient-detail").innerHTML =
+      // --- record header ---
       '<div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; align-items:flex-start;">'+
         '<div><button class="btn ghost2 sm" id="pd-back">← All patients</button>'+
-        '<div style="font-weight:700; font-size:16px; margin-top:4px;">'+p.name+'</div>'+
-        '<div class="note">'+p.email+' · '+p.phone+' · '+p.externalId+'</div></div>'+
+        '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px;">'+
+          '<div style="font-weight:700; font-size:17px;">'+esc(p.name)+'</div>'+
+          (inColl ? '<span class="pill bad">'+ic("shield")+' In collections</span>' : '<span class="pill ok">'+ic("check")+' Active</span>')+
+          (p.overdue>0 ? '<span class="pill bad">'+ic("alert")+' '+p.overdue+' overdue</span>' : '')+
+          (p.insurance ? '<span class="pill ghost">'+ic("refresh")+' '+esc(p.insurance)+'</span>' : '')+
+        '</div>'+
+        '<div class="note">'+esc(p.email)+' · '+esc(p.phone)+' · '+esc(p.externalId)+'</div></div>'+
         '<div style="display:flex; gap:8px; flex-wrap:wrap;">'+
-          '<a class="btn outline sm" href="tel:'+p.phone+'">📞 Call</a>'+
-          '<a class="btn outline sm" href="mailto:'+p.email+'">✉️ Email</a>'+
-          '<button class="btn outline sm" id="pd-magic">🔗 Email portal link</button>'+
-          '<button class="btn outline sm" id="pd-statement">📄 Email statement</button>'+
+          '<a class="btn outline sm" href="tel:'+esc(p.phone)+'">'+ic("phone")+' Call</a>'+
+          '<a class="btn outline sm" href="mailto:'+esc(p.email)+'">'+ic("mail")+' Email</a>'+
+          '<button class="btn outline sm" id="pd-magic">'+ic("mail")+' Email portal link</button>'+
+          '<button class="btn outline sm" id="pd-statement">'+ic("file")+' Email statement</button>'+
         '</div>'+
       '</div>'+
+      // --- balances ---
       '<div class="kpis" style="margin-top:14px;">'+
         kpi("Billed", fmt(p.billed), "") +
         kpi("Paid", fmt(p.paid), "") +
         kpi("Outstanding", fmt(p.billed-p.paid), "accent") +
         (p.overdue>0 ? kpi("Overdue", String(p.overdue), "danger") : kpi("Plans", p.hasPlan?"1":"0", "")) +
       '</div>'+
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">'+
-        (p.arStatus==="IN_COLLECTIONS" ? '<span class="pill bad">In collections</span>' : '<span class="pill ok">Active</span>')+
-        (p.insurance ? '<span class="pill ghost">Ins: '+p.insurance+'</span>' : '')+
-        (p.overdue>0 ? '<span class="pill bad">⚠️ '+p.overdue+' overdue installment</span>' : '')+
-      '</div>'+
-      '<div class="grid2" style="margin-top:14px;">'+
-        '<div><div style="font-weight:700; margin:10px 0 4px;">Invoices</div>'+invRows+
-        '<div style="font-weight:700; margin:12px 0 4px;">Payment history</div><ul class="list">'+histRows+'</ul></div>'+
-        '<div><div style="font-weight:700; margin:10px 0 4px;">Help resolve</div>'+
-          '<div class="card pad" style="margin-top:4px;">'+
-            '<div class="field"><label>Record manual payment ($)</label><input class="input" type="number" id="pd-pay" step="0.01" min="0" placeholder="100.00" /></div>'+
-            '<button class="btn primary block sm" id="pd-record">Record payment</button>'+
-            '<div class="field" style="margin-top:10px;"><label>Write-off / adjustment ($, negative)</label><input class="input" type="number" id="pd-adj" step="0.01" placeholder="-25.00" /></div>'+
-            '<button class="btn outline block sm" id="pd-adjust">Record adjustment</button>'+
-            '<div class="field" style="margin-top:10px;"><label>Log a call or note</label><textarea class="input" id="pd-note" rows="2" placeholder="Spoke with patient about overdue payment…"></textarea></div>'+
-            '<button class="btn outline block sm" id="pd-log-call">📞 Log call</button>'+
-            '<button class="btn outline block sm" id="pd-log-note" style="margin-top:6px;">✍️ Save note</button>'+
-            '<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">'+
-              (p.arStatus==="IN_COLLECTIONS"
-                ? '<button class="btn outline block sm" id="pd-release-collections">↩ Pull out of collections</button>'
-                : '<button class="btn outline block sm" id="pd-collections">⚠️ Send to collections</button>')+
-              '<div class="field" style="margin-top:8px;"><label>Re-submit to insurance (carrier)</label><input class="input" type="text" id="pd-ins" placeholder="Blue Cross 555" value="'+(p.insurance||"")+'" /></div>'+
-              '<button class="btn outline block sm" id="pd-resubmit-ins">🔁 Re-submit to insurance</button>'+
-            '</div>'+
-            '<p class="notice hidden" id="pd-notice" style="margin-top:10px;"></p>'+
-          '</div></div>'+
-      '</div>'+
-      '<div class="grid2" style="margin-top:14px;">'+
-        '<div><div style="font-weight:700; margin:10px 0 4px;">Activity &amp; notes</div><ul class="list">'+noteRows+'</ul></div>'+
-        '<div><div style="font-weight:700; margin:10px 0 4px;">Email history</div><ul class="list">'+emailRows+'</ul>'+
-          '<div style="margin-top:8px;"><button class="btn outline sm" id="pd-statement">📄 Email statement</button>'+
-          '<button class="btn outline sm" id="pd-magic" style="margin-left:6px;">🔗 Email portal link</button></div>'+
+      // --- action gallery (each button opens a modal) ---
+      '<div class="card pad" style="margin-top:14px;">'+
+        '<div style="font-weight:700; margin-bottom:10px;">Actions</div>'+
+        '<div class="act-grid">'+
+          '<button class="act-btn" type="button" onclick="window.__pd && window.__pd(\'payment\')">'+ic("money")+' Record payment</button>'+
+          '<button class="act-btn" type="button" onclick="window.__pd && window.__pd(\'adjust\')">'+ic("money")+' Write-off</button>'+
+          '<button class="act-btn" type="button" onclick="window.__pd && window.__pd(\'invoice\')">'+ic("calendar_plus")+' Add invoice</button>'+
+          '<button class="act-btn" type="button" onclick="window.__pd && window.__pd(\'call\')">'+ic("phone")+' Log a call</button>'+
+          '<button class="act-btn" type="button" onclick="window.__pd && window.__pd(\'note\')">'+ic("note")+' Add note</button>'+
+          '<button class="act-btn" type="button" onclick="window.__pd && window.__pd(\'statement\')">'+ic("file")+' Email statement</button>'+
+          '<button class="act-btn" type="button" onclick="window.__pd && window.__pd(\'magic\')">'+ic("mail")+' Portal link</button>'+
+          '<button class="act-btn" type="button" onclick="window.__pd && window.__pd(\'collections\')">'+ic("shield")+' '+(inColl?"Pull from collections":"Send to collections")+'</button>'+
+          '<button class="act-btn" type="button" onclick="window.__pd && window.__pd(\'insurance\')">'+ic("refresh")+' Re-submit insurance</button>'+
         '</div>'+
+      '</div>'+
+      // --- records: invoices / payment history ---
+      '<div class="grid2" style="margin-top:14px;">'+
+        '<div class="card pad"><div style="font-weight:700; margin-bottom:8px;">'+ic("file")+' Invoices</div>'+invRows+'</div>'+
+        '<div class="card pad"><div style="font-weight:700; margin-bottom:8px;">'+ic("money")+' Payment history</div><ul class="list">'+histRows+'</ul></div>'+
+      '</div>'+
+      // --- records: activity / email history ---
+      '<div class="grid2" style="margin-top:14px;">'+
+        '<div class="card pad"><div style="font-weight:700; margin-bottom:8px;">'+ic("note")+' Activity &amp; notes</div><ul class="list">'+noteRows+'</ul></div>'+
+        '<div class="card pad"><div style="font-weight:700; margin-bottom:8px;">'+ic("mail")+' Email history</div><ul class="list">'+emailRows+'</ul></div>'+
       '</div>';
     provState.patientId = id;
     $("pd-back").addEventListener("click", function(){
@@ -938,69 +1054,90 @@ and give me a go-live checklist.</pre>
       provState.patientId = null;
       fitScreens();
     });
-    $("pd-magic").addEventListener("click", function(){ pdNotice("Portal link emailed to "+p.email+" ✓ — logged to email history."); });
-    $("pd-statement").addEventListener("click", function(){ pdNotice("Statement emailed to "+p.email+" ✓ — logged to email history."); });
-    $("pd-log-call").addEventListener("click", function(){
-      var txt = $("pd-note").value.trim();
-      if (!txt) return;
-      (p.notes = p.notes||[]).unshift({k:"CALL", d:txt, who:"Billing team", at:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})});
-      $("pd-note").value="";
-      pdNotice("📞 Call logged ✓");
-      renderPatientDetail(id);
-    });
-    $("pd-log-note").addEventListener("click", function(){
-      var txt = $("pd-note").value.trim();
-      if (!txt) return;
-      (p.notes = p.notes||[]).unshift({k:"NOTE", d:txt, who:"Billing team", at:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})});
-      $("pd-note").value="";
-      pdNotice("✍️ Note saved ✓");
-      renderPatientDetail(id);
-    });
-    var elColl = $("pd-collections");
-    if (elColl) elColl.addEventListener("click", function(){
-      p.arStatus="IN_COLLECTIONS";
-      (p.notes = p.notes||[]).unshift({k:"COLLECTIONS", d:"Account sent to collections.", who:"Billing team", at:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})});
-      pdNotice("⚠️ Sent to collections — flagged on the record and patients list.");
-      renderPatientDetail(id);
-    });
-    var elRel = $("pd-release-collections");
-    if (elRel) elRel.addEventListener("click", function(){
-      p.arStatus="ACTIVE";
-      (p.notes = p.notes||[]).unshift({k:"COLLECTIONS", d:"Account pulled out of collections and returned to active.", who:"Billing team", at:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})});
-      pdNotice("↩ Returned to active ✓");
-      renderPatientDetail(id);
-    });
-    $("pd-resubmit-ins").addEventListener("click", function(){
-      var c = $("pd-ins").value.trim();
-      p.insurance = c || p.insurance;
-      (p.notes = p.notes||[]).unshift({k:"INSURANCE", d:(c?"Claim re-submitted to "+c+".":"Claim re-submitted to insurance."), who:"Billing team", at:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})});
-      pdNotice("🔁 Insurance re-submission logged ✓");
-      renderPatientDetail(id);
-    });
-    $("pd-record").addEventListener("click", function(){
-      var amt = Math.round((parseFloat($("pd-pay").value)||0)*100);
-      if (amt<=0) return;
-      p.paid += amt;
-      p.history.unshift({t:"PAYMENT", d:"Manual payment (billing team)", a:"+"+fmt(amt), cls:"ok"});
-      if (p.history.length>8) p.history.pop();
-      pdNotice("Payment of "+fmt(amt)+" recorded to the append-only ledger ✓");
-      renderPatientDetail(id);
-    });
-    $("pd-adjust").addEventListener("click", function(){
-      var amt = Math.round((parseFloat($("pd-adj").value)||0)*100);
-      if (amt===0) return;
-      p.paid += -amt;
-      p.history.unshift({t:"ADJUSTMENT", d:"Write-off / adjustment", a:fmt(-amt), cls:"ghost"});
-      if (p.history.length>8) p.history.pop();
-      pdNotice("Adjustment of "+fmt(-amt)+" recorded ✓ (append-only).");
-      renderPatientDetail(id);
-    });
+    $("pd-magic").addEventListener("click", function(){ openModal("Email portal link", "A secure, expiring magic link to "+esc(p.email||"the portal")+".", '<p class="note">Logged to the email history below.</p>', "Send link", function(done){ (p.emails=p.emails||[]).unshift({k:"PORTAL LINK", s:"Your secure payment portal link", at:today(), st:"sent"}); done("Portal link emailed to "+p.email+" ✓"); }); });
+    $("pd-statement").addEventListener("click", function(){ openModal("Email statement", "Full invoice & payment summary to "+esc(p.email||"—")+".", '<p class="note">Logged to the email history below.</p>', "Send statement", function(done){ (p.emails=p.emails||[]).unshift({k:"STATEMENT", s:"Your statement", at:today(), st:"sent"}); done("Statement emailed to "+p.email+" ✓"); }); });
+    // action gallery handler
+    window.__pd = function(action){
+      if (action==="payment") openModal("Record a payment", "Appends to the append-only ledger — nothing is edited.",
+        '<div class="field"><label>Amount ($)</label><input class="input" type="number" id="pd-pay" step="0.01" min="0" placeholder="100.00" /></div>'+
+        '<div class="field"><label>Note</label><input class="input" type="text" id="pd-note" placeholder="Manual payment received" value="Manual payment received" /></div>',
+        "Record payment", function(done){
+          var amt = Math.round((parseFloat($("pd-pay").value)||0)*100);
+          if (amt<=0) { alert("Enter a positive amount."); return; }
+          p.paid += amt;
+          p.history.unshift({t:"PAYMENT", d:$("pd-note").value||"Manual payment (billing team)", a:"+"+fmt(amt), cls:"ok"});
+          if (p.history.length>8) p.history.pop();
+          done("Payment of "+fmt(amt)+" recorded to the ledger ✓");
+        });
+      if (action==="adjust") openModal("Write-off / adjustment", "Negative amount reduces the balance.",
+        '<div class="field"><label>Amount ($, negative)</label><input class="input" type="number" id="pd-adj" step="0.01" placeholder="-25.00" /></div>'+
+        '<div class="field"><label>Reason</label><input class="input" type="text" id="pd-adj-note" placeholder="Insurance write-off" value="Insurance write-off" /></div>',
+        "Record adjustment", function(done){
+          var amt = Math.round((parseFloat($("pd-adj").value)||0)*100);
+          if (amt===0) return;
+          p.paid += -amt;
+          p.history.unshift({t:"ADJUSTMENT", d:$("pd-adj-note").value||"Write-off / adjustment", a:fmt(-amt), cls:"ghost"});
+          if (p.history.length>8) p.history.pop();
+          done("Adjustment of "+fmt(-amt)+" recorded ✓ (append-only).");
+        });
+      if (action==="invoice") openModal("Add an invoice", "Bill the patient for a service.",
+        '<div class="row2"><div class="field"><label>Invoice #</label><input class="input" type="text" id="pd-inv-num" placeholder="INV-2001" /></div>'+
+        '<div class="field"><label>Amount ($)</label><input class="input" type="number" id="pd-inv-amt" step="0.01" min="0" placeholder="250.00" /></div></div>'+
+        '<div class="field"><label>Description</label><input class="input" type="text" id="pd-inv-desc" placeholder="Office visit — routine checkup" /></div>',
+        "Add invoice", function(done){
+          var amt = Math.round((parseFloat($("pd-inv-amt").value)||0)*100);
+          var num = ($("pd-inv-num").value||"").trim(), desc = ($("pd-inv-desc").value||"").trim();
+          if (!num || !desc || amt<=0) { alert("Fill in number, description and a positive amount."); return; }
+          p.billed += amt;
+          p.invoices.unshift({num:num, desc:desc, total:amt, outstanding:amt, plan:"—"});
+          done("Invoice "+num+" added ✓");
+        });
+      if (action==="call") openModal("Log a phone call", "Records the call on the patient's timeline.",
+        '<div class="field"><label>Call summary</label><textarea class="input" id="pd-note" rows="3" placeholder="Spoke with patient about overdue payment - they will pay Friday."></textarea></div>',
+        "Save call log", function(done){
+          var txt = ($("pd-note").value||"").trim();
+          if (!txt) return;
+          (p.notes=p.notes||[]).unshift({k:"CALL", d:txt, who:"Billing team", at:today()});
+          done("Call logged ✓");
+        });
+      if (action==="note") openModal("Add a note", "Internal note on this account.",
+        '<div class="field"><label>Note</label><textarea class="input" id="pd-note" rows="3" placeholder="Insurance pending — follow up next week."></textarea></div>',
+        "Save note", function(done){
+          var txt = ($("pd-note").value||"").trim();
+          if (!txt) return;
+          (p.notes=p.notes||[]).unshift({k:"NOTE", d:txt, who:"Billing team", at:today()});
+          done("Note saved ✓");
+        });
+      if (action==="statement") openModal("Email a statement", "Full invoice & payment summary to "+esc(p.email||"—")+".",
+        '<p class="note">Logged to the email history below.</p>', "Send statement", function(done){
+          (p.emails=p.emails||[]).unshift({k:"STATEMENT", s:"Your statement", at:today(), st:"sent"});
+          done("Statement emailed to "+p.email+" ✓");
+        });
+      if (action==="magic") openModal("Email the portal link", "A secure, expiring magic link.",
+        '<p class="note">Logged to the email history below.</p>', "Send link", function(done){
+          (p.emails=p.emails||[]).unshift({k:"PORTAL LINK", s:"Your secure payment portal link", at:today(), st:"sent"});
+          done("Portal link emailed to "+p.email+" ✓");
+        });
+      if (action==="collections") openModal(inColl?"Pull out of collections":"Send to collections",
+        inColl?"Returns the account to active status.":"Flags the account and logs it on the record.",
+        '<p class="note">'+(inColl?"The account will be marked active again.":"The account will appear in the Collections view and patients list.")+'</p>',
+        inColl?"Return to active":"Send to collections", function(done){
+          p.arStatus = inColl ? "ACTIVE" : "IN_COLLECTIONS";
+          (p.notes=p.notes||[]).unshift({k:"COLLECTIONS", d:inColl?"Account pulled out of collections and returned to active.":"Account sent to collections.", who:"Billing team", at:today()});
+          done(inColl?"Returned to active ✓":"Sent to collections ✓");
+        }, inColl?"":"danger");
+      if (action==="insurance") openModal("Re-submit to insurance", "File the claim again with a new carrier.",
+        '<div class="field"><label>Carrier (optional)</label><input class="input" type="text" id="pd-ins" placeholder="Blue Cross 555" value="'+esc(p.insurance||"")+'" /></div>'+
+        '<div class="field"><label>Note (optional)</label><input class="input" type="text" id="pd-ins-note" placeholder="Why re-submitting?" /></div>',
+        "Re-submit", function(done){
+          var c = ($("pd-ins").value||"").trim();
+          p.insurance = c || p.insurance;
+          (p.notes=p.notes||[]).unshift({k:"INSURANCE", d:(c?"Claim re-submitted to "+c+".":"Claim re-submitted to insurance."), who:"Billing team", at:today()});
+          done("Insurance re-submission logged ✓");
+        });
+    };
+    window.__pd = window.__pd;
     fitScreens();
-  }
-  function pdNotice(msg){
-    var n = $("pd-notice");
-    n.textContent = msg;
-    n.classList.remove("hidden");
   }
   window.__openPatient = function(id){
     $("prov-patients-list").classList.add("hidden");

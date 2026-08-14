@@ -66,7 +66,7 @@ export default async function StatementPage({
               {patient.email && <p className="text-muted-foreground">{patient.email}</p>}
               {patient.phone && <p className="text-muted-foreground">{patient.phone}</p>}
               <p className="mt-1 text-xs text-muted-foreground">
-                Statement prepared by Open Patient Pay
+                Statement prepared by {patient.organization.name}
               </p>
             </div>
           </div>

@@ -1,15 +1,46 @@
 import Link from "next/link";
+import {
+  ArrowLeft,
+  Copy,
+  Phone,
+  Mail,
+  CircleDollarSign,
+  CheckCircle2,
+  TriangleAlert,
+  CreditCard,
+  FileText,
+  History,
+  MailCheck,
+  StickyNote,
+  ShieldAlert,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyLink } from "@/components/copy-link";
-import { ArPanel } from "@/components/admin/ar-panel";
-import { PatientActions } from "@/components/admin/patient-actions";
+import { RecordActions } from "@/components/admin/record-actions";
 import { getPatientDetail } from "@/lib/queries";
 import { formatCents } from "@/lib/money";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+const NOTE_KIND_LABEL: Record<string, { label: string; icon: React.ReactNode }> = {
+  NOTE: { label: "Note", icon: <StickyNote className="h-3.5 w-3.5" /> },
+  CALL: { label: "Call logged", icon: <Phone className="h-3.5 w-3.5" /> },
+  COLLECTIONS: { label: "Collections", icon: <ShieldAlert className="h-3.5 w-3.5" /> },
+  INSURANCE: { label: "Insurance", icon: <MailCheck className="h-3.5 w-3.5" /> },
+};
+
+const EMAIL_KIND_LABEL: Record<string, string> = {
+  MAGIC_LINK: "Portal link",
+  PORTAL_LINK: "Portal link",
+  RECEIPT: "Receipt",
+  STATEMENT: "Statement",
+  REMINDER: "Reminder",
+  BULK_STATEMENT: "Bulk statement",
+  BULK_REMINDER: "Bulk reminder",
+};
 
 function statusVariant(s: string): "success" | "warning" | "secondary" | "destructive" {
   if (s === "PAID" || s === "COMPLETED") return "success";
@@ -40,56 +71,82 @@ export default async function PatientDetailPage({
   const overdue = p.plans.flatMap((pl) =>
     pl.installments.filter((i) => i.status === "SCHEDULED" && new Date(i.dueDate) < new Date())
   );
+  const inCollections = p.arStatus === "IN_COLLECTIONS";
 
   return (
     <div className="space-y-6">
+      {/* Record header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href="/admin/patients" className="text-sm text-primary hover:underline">
-            ← Patients
+          <Link href="/admin/patients" className="flex items-center gap-1.5 text-sm text-primary hover:underline">
+            <ArrowLeft className="h-4 w-4" /> Patients
           </Link>
-          <h1 className="mt-1 text-2xl font-bold">{p.name}</h1>
-          <p className="text-sm text-muted-foreground">
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-bold">{p.name}</h1>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {inCollections && <Badge variant="destructive">In collections</Badge>}
+              {p.insuranceCarrier && <Badge variant="secondary">Ins: {p.insuranceCarrier}</Badge>}
+              {p.outstandingCents === 0 ? (
+                <Badge variant="success">Paid in full</Badge>
+              ) : p.plans.some((pl) => pl.status === "ACTIVE") ? (
+                <Badge variant="secondary">On a plan</Badge>
+              ) : (
+                <Badge variant="warning">No plan</Badge>
+              )}
+            </div>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
             {p.email ?? "no email"} {p.email && p.phone ? " · " : ""} {p.phone ?? "no phone"}
-            {p.externalId ? ` · ${p.externalId}` : ""} · patient since{" "}
-            {formatDate(p.createdAt)}
+            {p.externalId ? ` · ${p.externalId}` : ""} · patient since {formatDate(p.createdAt)}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <CopyLink token={p.payToken} />
           <Button asChild variant="outline" size="sm">
             <a href={`tel:${p.phone ?? ""}`} className={p.phone ? "" : "pointer-events-none opacity-50"}>
-              📞 Call patient
+              <Phone className="h-4 w-4" /> Call
             </a>
           </Button>
           <Button asChild variant="outline" size="sm">
             <a href={`mailto:${p.email ?? ""}`} className={p.email ? "" : "pointer-events-none opacity-50"}>
-              ✉️ Email patient
+              <Mail className="h-4 w-4" /> Email
             </a>
           </Button>
+          <Button asChild variant="outline" size="sm">
+            <a href={`/pay/${p.payToken}`} target="_blank" rel="noopener">
+              <CreditCard className="h-4 w-4" /> Open portal
+            </a>
+          </Button>
+          <CopyLink token={p.payToken} />
         </div>
       </div>
 
+      {/* Balance strip */}
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Billed</CardTitle>
+          <CardHeader className="pb-1">
+            <CardTitle className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+              <CircleDollarSign className="h-4 w-4" /> Billed
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{formatCents(p.billedCents)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Paid</CardTitle>
+          <CardHeader className="pb-1">
+            <CardTitle className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+              <CheckCircle2 className="h-4 w-4" /> Paid
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-emerald-700">{formatCents(p.appliedCents)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Outstanding</CardTitle>
+          <CardHeader className="pb-1">
+            <CardTitle className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+              <TriangleAlert className="h-4 w-4" /> Outstanding
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-primary">{formatCents(p.outstandingCents)}</p>
@@ -97,28 +154,12 @@ export default async function PatientDetailPage({
         </Card>
       </div>
 
-      <PatientActions
-        patientId={p.id}
-        patientName={p.name}
-        patientEmail={p.email}
-        patientPhone={p.phone}
-        invoices={p.invoices.map((i) => ({ id: i.id, label: `${i.invoiceNumber} — ${formatCents(i.outstandingCents)} outstanding` }))}
-      />
-
-      <ArPanel
-        patientId={p.id}
-        patientName={p.name}
-        arStatus={p.arStatus}
-        insuranceCarrier={p.insuranceCarrier}
-        emails={p.emailLogs}
-        notes={p.notes}
-      />
-
       {overdue.length > 0 && (
         <Card className="border-destructive/40">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-destructive">
-              ⚠️ {overdue.length} overdue installment{overdue.length > 1 ? "s" : ""}
+            <CardTitle className="flex items-center gap-2 text-sm text-destructive">
+              <TriangleAlert className="h-4 w-4" />
+              {overdue.length} overdue installment{overdue.length > 1 ? "s" : ""}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -136,10 +177,33 @@ export default async function PatientDetailPage({
         </Card>
       )}
 
+      {/* Action gallery — Salesforce-style: buttons that open modals */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RecordActions
+            patientId={p.id}
+            patientName={p.name}
+            patientEmail={p.email}
+            patientPhone={p.phone}
+            arStatus={p.arStatus}
+            insuranceCarrier={p.insuranceCarrier}
+            invoices={p.invoices.map((i) => ({
+              id: i.id,
+              label: `${i.invoiceNumber} — ${formatCents(i.outstandingCents)} outstanding`,
+            }))}
+          />
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Invoices</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FileText className="h-4 w-4" /> Invoices &amp; plans
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {p.invoices.length === 0 && (
@@ -171,8 +235,7 @@ export default async function PatientDetailPage({
                     </p>
                     <ul className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                       {inv.plan.installments.map((i) => {
-                        const isOverdue =
-                          i.status === "SCHEDULED" && new Date(i.dueDate) < new Date();
+                        const isOverdue = i.status === "SCHEDULED" && new Date(i.dueDate) < new Date();
                         return (
                           <li key={i.id} className="flex items-center justify-between">
                             <span className="text-muted-foreground">
@@ -197,7 +260,9 @@ export default async function PatientDetailPage({
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Payment history</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <History className="h-4 w-4" /> Payment history
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {p.transactions.length === 0 ? (
@@ -208,13 +273,7 @@ export default async function PatientDetailPage({
                   <li key={t.id} className="flex items-center justify-between py-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Badge
-                        variant={
-                          t.type === "PAYMENT"
-                            ? "success"
-                            : t.type === "REFUND"
-                              ? "destructive"
-                              : "secondary"
-                        }
+                        variant={t.type === "PAYMENT" ? "success" : t.type === "REFUND" ? "destructive" : "secondary"}
                       >
                         {t.type}
                       </Badge>
@@ -229,6 +288,72 @@ export default async function PatientDetailPage({
                       </span>
                       <p className="text-xs text-muted-foreground">{formatDate(t.occurredAt)}</p>
                     </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <StickyNote className="h-4 w-4" /> Activity &amp; notes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {p.notes.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No notes or calls logged yet.</p>
+            ) : (
+              <ul className="space-y-3">
+                {p.notes.map((n) => (
+                  <li key={n.id} className="rounded-lg border p-3">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                        {NOTE_KIND_LABEL[n.kind]?.icon}
+                        {NOTE_KIND_LABEL[n.kind]?.label ?? n.kind}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {n.author} · {new Date(n.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm">{n.body}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <MailCheck className="h-4 w-4" /> Email history
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {p.emailLogs.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No emails sent yet. Magic links, receipts, statements, and reminders all show up here.
+              </p>
+            ) : (
+              <ul className="divide-y">
+                {p.emailLogs.map((e) => (
+                  <li key={e.id} className="py-2 text-sm">
+                    <div className="flex items-center justify-between">
+                      <Badge variant={e.status === "SENT" ? "success" : "warning"}>
+                        {EMAIL_KIND_LABEL[e.kind] ?? e.kind}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {e.status === "SENT" ? "sent" : "preview (no SMTP)"}
+                      </span>
+                    </div>
+                    <p className="mt-0.5 font-medium">{e.subject}</p>
+                    <p className="text-xs text-muted-foreground">
+                      to {e.to} · {new Date(e.createdAt).toLocaleString()}
+                    </p>
                   </li>
                 ))}
               </ul>

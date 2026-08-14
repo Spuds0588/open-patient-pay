@@ -24,6 +24,16 @@
     --radius: 0.5rem;
   }
 
+  /*
+   * Provider theming: the app is white-labeled by overriding these variables.
+   * The default below is the demo clinic — a practice changes APP_ACCENT /
+   * APP_NAME (see src/components/theme-provider.tsx) to match their brand.
+   */
+  .theme-provider {
+    --primary: 174 68% 34%;        /* teal — Lakeside Family Medicine */
+    --ring: 174 68% 34%;
+  }
+
   * {
     @apply border-border;
   }

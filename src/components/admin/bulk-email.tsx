@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { FileText, BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCents } from "@/lib/money";
 
@@ -88,18 +89,20 @@ export function BulkEmailBar({ patients }: { patients: PatientLite[] }) {
           <Button
             variant="outline"
             size="sm"
+            className="gap-1.5"
             disabled={selected.size === 0 || busy}
             onClick={() => send("statement")}
           >
-            📄 Email statements
+            <FileText className="h-4 w-4" /> Email statements
           </Button>
           <Button
             variant="outline"
             size="sm"
+            className="gap-1.5"
             disabled={selected.size === 0 || busy}
             onClick={() => send("reminder")}
           >
-            🔔 Email reminders
+            <BellRing className="h-4 w-4" /> Email reminders
           </Button>
         </div>
       </div>
