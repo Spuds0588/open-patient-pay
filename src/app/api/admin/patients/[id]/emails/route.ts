@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/db/client";
 import { config } from "@/lib/config";
 import { reminderEmail, statementBodyRows, statementEmail } from "@/lib/emails";
-import { sendMail } from "@/lib/mailer";
+import { sendPatientEmail } from "@/lib/mailer";
 import { isAdminRequestAuthorized } from "@/lib/auth";
 
 const schema = z.object({
@@ -78,7 +78,13 @@ export async function POST(
       });
     }
 
-    const result = await sendMail({ to: patient.email, subject, html });
+    const result = await sendPatientEmail({
+      patientId: patient.id,
+      kind: parsed.data.kind === "statement" ? "STATEMENT" : "REMINDER",
+      to: patient.email,
+      subject,
+      html,
+    });
     return NextResponse.json({
       ok: true,
       sent: result.sent,

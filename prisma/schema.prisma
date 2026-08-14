@@ -49,6 +49,34 @@ enum TransactionStatus {
   FAILED
 }
 
+enum ArStatus {
+  ACTIVE
+  IN_COLLECTIONS
+}
+
+enum NoteKind {
+  NOTE
+  CALL
+  COLLECTIONS
+  INSURANCE
+}
+
+enum EmailKind {
+  MAGIC_LINK
+  PORTAL_LINK
+  RECEIPT
+  STATEMENT
+  REMINDER
+  BULK_STATEMENT
+  BULK_REMINDER
+}
+
+enum EmailStatus {
+  SENT
+  MOCKED
+  FAILED
+}
+
 model Organization {
   id        String   @id @default(uuid())
   name      String
@@ -64,6 +92,8 @@ model Organization {
   transactions    Transaction[]
   installmentPlan InstallmentPlan[]
   installment     Installment[]
+  emailLogs       EmailLog[]
+  patientNotes    PatientNote[]
 }
 
 model Patient {
@@ -87,12 +117,18 @@ model Patient {
   // Opt-in: email reminders before each scheduled payment.
   remindersEnabled Boolean @default(false)
 
+  // Accounts-receivable state: sent to collections, insurance carrier on file.
+  arStatus         ArStatus @default(ACTIVE)
+  insuranceCarrier String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   invoices   Invoice[]
   plans      InstallmentPlan[]
   transactions Transaction[]
+  emailLogs  EmailLog[]
+  notes      PatientNote[]
 
   @@index([organizationId])
   @@index([organizationId, externalId])
@@ -201,4 +237,48 @@ model Installment {
   @@unique([planId, index])
   @@index([organizationId])
   @@index([dueDate])
+}
+
+// Audit trail of every email we send a patient (magic links, receipts,
+// statements, reminders, bulk sends). Written from the same code paths that
+// call sendMail, so the log never drifts from what actually went out.
+model EmailLog {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  kind    EmailKind
+  to      String
+  subject String
+  status  EmailStatus @default(MOCKED)
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId])
+  @@index([patientId])
+  @@index([createdAt])
+}
+
+// Patient record notes: internal notes, logged phone calls, and workflow
+// events (sent to collections, insurance re-submission).
+model PatientNote {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  kind   NoteKind @default(NOTE)
+  body   String
+  author String
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId])
+  @@index([patientId])
+  @@index([createdAt])
 }

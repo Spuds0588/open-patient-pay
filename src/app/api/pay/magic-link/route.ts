@@ -4,7 +4,7 @@ import { prisma } from "@/db/client";
 import { issueMagicLink } from "@/core/services";
 import { config } from "@/lib/config";
 import { magicLinkEmail } from "@/lib/emails";
-import { sendMail } from "@/lib/mailer";
+import { sendPatientEmail } from "@/lib/mailer";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email address."),
@@ -28,7 +28,9 @@ export async function POST(request: Request) {
     }
 
     const { url, expiresAt } = await issueMagicLink(patient.id, config.baseUrl);
-    const result = await sendMail({
+    const result = await sendPatientEmail({
+      patientId: patient.id,
+      kind: "MAGIC_LINK",
       to: patient.email!,
       subject: "Your secure payment portal link",
       html: magicLinkEmail({ name: patient.name, url }),

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/db/client";
 import { config } from "@/lib/config";
 import { reminderEmail, receiptEmail, statementBodyRows, statementEmail } from "@/lib/emails";
-import { sendMail } from "@/lib/mailer";
+import { sendPatientEmail } from "@/lib/mailer";
 import { formatCents } from "@/lib/money";
 
 const schema = z.object({
@@ -94,7 +94,23 @@ export async function POST(request: Request) {
       });
     }
 
-    const result = await sendMail({ to: patient.email, subject, html });
+    const kind = (() => {
+      switch (parsed.data.kind) {
+        case "receipt":
+          return "RECEIPT" as const;
+        case "statement":
+          return "STATEMENT" as const;
+        default:
+          return "REMINDER" as const;
+      }
+    })();
+    const result = await sendPatientEmail({
+      patientId: patient.id,
+      kind,
+      to: patient.email,
+      subject,
+      html,
+    });
     return NextResponse.json({
       ok: true,
       sent: result.sent,

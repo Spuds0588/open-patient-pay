@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyLink } from "@/components/copy-link";
+import { ArPanel } from "@/components/admin/ar-panel";
 import { PatientActions } from "@/components/admin/patient-actions";
 import { getPatientDetail } from "@/lib/queries";
 import { formatCents } from "@/lib/money";
@@ -102,6 +103,15 @@ export default async function PatientDetailPage({
         patientEmail={p.email}
         patientPhone={p.phone}
         invoices={p.invoices.map((i) => ({ id: i.id, label: `${i.invoiceNumber} — ${formatCents(i.outstandingCents)} outstanding` }))}
+      />
+
+      <ArPanel
+        patientId={p.id}
+        patientName={p.name}
+        arStatus={p.arStatus}
+        insuranceCarrier={p.insuranceCarrier}
+        emails={p.emailLogs}
+        notes={p.notes}
       />
 
       {overdue.length > 0 && (

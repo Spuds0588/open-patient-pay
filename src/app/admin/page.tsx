@@ -13,10 +13,54 @@ export default async function AdminDashboardPage() {
   const ledger = await getLedger(6);
 
   const cards = [
-    { label: "Outstanding", value: formatCents(metrics.outstandingCents), accent: true },
-    { label: "Collected", value: formatCents(metrics.collectedCents) },
-    { label: "Billed", value: formatCents(metrics.billedCents) },
-    { label: "Collection rate", value: `${metrics.collectionRate}%` },
+    {
+      label: "Outstanding",
+      value: formatCents(metrics.outstandingCents),
+      accent: true,
+      href: "/admin/patients?view=outstanding",
+      hint: "See who owes",
+    },
+    {
+      label: "Collected",
+      value: formatCents(metrics.collectedCents),
+      href: "/admin/ledger",
+      hint: "View ledger",
+    },
+    {
+      label: "Billed",
+      value: formatCents(metrics.billedCents),
+      href: "/admin/patients",
+      hint: "All patients",
+    },
+    {
+      label: "Collection rate",
+      value: `${metrics.collectionRate}%`,
+      href: "/admin/ledger",
+      hint: "View ledger",
+    },
+  ];
+
+  const arCards = [
+    {
+      label: "Overdue installments",
+      value: String(metrics.overdueInstallmentCount),
+      danger: true,
+      href: "/admin/patients?view=overdue",
+      hint: "Resolve now",
+    },
+    {
+      label: "No plan, balance due",
+      value: String(metrics.noPlanOutstandingCount),
+      href: "/admin/patients?view=no-plan",
+      hint: "Set up a plan",
+    },
+    {
+      label: "In collections",
+      value: String(metrics.inCollectionsCount),
+      danger: true,
+      href: "/admin/patients?view=in-collections",
+      hint: "Review accounts",
+    },
   ];
 
   return (
@@ -24,7 +68,9 @@ export default async function AdminDashboardPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Your practice at a glance.</p>
+          <p className="text-muted-foreground">
+            Your practice at a glance — click any number to dig in.
+          </p>
         </div>
         <Button asChild>
           <Link href="/admin/import">Import billing CSV</Link>
@@ -33,42 +79,52 @@ export default async function AdminDashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
-          <Card key={c.label}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{c.label}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className={`text-3xl font-bold ${c.accent ? "text-primary" : ""}`}>{c.value}</p>
-            </CardContent>
-          </Card>
+          <Link key={c.label} href={c.href} className="group">
+            <Card className="transition-shadow group-hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{c.label}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={`text-3xl font-bold ${c.accent ? "text-primary" : ""}`}>{c.value}</p>
+                <p className="mt-1 text-xs font-medium text-primary group-hover:underline">
+                  {c.hint} →
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Patients</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{metrics.patientCount}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active plans</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{metrics.activePlanCount}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Overdue installments</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-destructive">{metrics.overdueInstallmentCount}</p>
-          </CardContent>
-        </Card>
+      <div>
+        <h2 className="mb-3 text-lg font-semibold">Accounts receivable</h2>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Link href="/admin/patients" className="group">
+            <Card className="transition-shadow group-hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Patients</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{metrics.patientCount}</p>
+                <p className="mt-1 text-xs font-medium text-primary group-hover:underline">All patients →</p>
+              </CardContent>
+            </Card>
+          </Link>
+          {arCards.map((c) => (
+            <Link key={c.label} href={c.href} className="group">
+              <Card className="transition-shadow group-hover:shadow-md">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{c.label}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className={`text-3xl font-bold ${c.danger ? "text-destructive" : ""}`}>{c.value}</p>
+                  <p className="mt-1 text-xs font-medium text-primary group-hover:underline">
+                    {c.hint} →
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
 
       <div>

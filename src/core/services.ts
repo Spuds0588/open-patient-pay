@@ -450,6 +450,99 @@ export async function recordAdjustment(input: {
 }
 
 // ---------------------------------------------------------------------------
+// AR workflows: notes, call log, collections, insurance re-submission
+// ---------------------------------------------------------------------------
+
+export type NoteKind = "NOTE" | "CALL" | "COLLECTIONS" | "INSURANCE";
+
+/** Add an internal note or log a phone call on the patient record. */
+export async function addPatientNote(input: {
+  patientId: string;
+  kind: NoteKind;
+  body: string;
+  author: string;
+}) {
+  const patient = await prisma.patient.findUnique({
+    where: { id: input.patientId },
+    select: { organizationId: true },
+  });
+  if (!patient) throw new Error("Patient not found.");
+  return prisma.patientNote.create({
+    data: {
+      organizationId: patient.organizationId,
+      patientId: input.patientId,
+      kind: input.kind,
+      body: input.body,
+      author: input.author,
+    },
+  });
+}
+
+/** Mark a patient as sent to collections (or pull them back out). */
+export async function setCollectionsStatus(input: {
+  patientId: string;
+  inCollections: boolean;
+  author: string;
+  note?: string;
+}) {
+  const patient = await prisma.patient.findUnique({
+    where: { id: input.patientId },
+    select: { organizationId: true, name: true },
+  });
+  if (!patient) throw new Error("Patient not found.");
+  const updated = await prisma.patient.update({
+    where: { id: input.patientId },
+    data: { arStatus: input.inCollections ? "IN_COLLECTIONS" : "ACTIVE" },
+  });
+  await prisma.patientNote.create({
+    data: {
+      organizationId: patient.organizationId,
+      patientId: input.patientId,
+      kind: "COLLECTIONS",
+      body:
+        input.note?.trim() ||
+        (input.inCollections
+          ? `Account sent to collections.`
+          : `Account pulled out of collections and returned to active.`),
+      author: input.author,
+    },
+  });
+  return updated;
+}
+
+/** Record an insurance re-submission (new carrier or claim re-filed). */
+export async function resubmitInsurance(input: {
+  patientId: string;
+  carrier?: string;
+  author: string;
+  note?: string;
+}) {
+  const patient = await prisma.patient.findUnique({
+    where: { id: input.patientId },
+    select: { organizationId: true },
+  });
+  if (!patient) throw new Error("Patient not found.");
+  const updated = await prisma.patient.update({
+    where: { id: input.patientId },
+    data: { insuranceCarrier: input.carrier?.trim() || undefined },
+  });
+  await prisma.patientNote.create({
+    data: {
+      organizationId: patient.organizationId,
+      patientId: input.patientId,
+      kind: "INSURANCE",
+      body:
+        input.note?.trim() ||
+        (input.carrier?.trim()
+          ? `Claim re-submitted to ${input.carrier.trim()}.`
+          : `Claim re-submitted to insurance.`),
+      author: input.author,
+    },
+  });
+  return updated;
+}
+
+// ---------------------------------------------------------------------------
 // Balance aggregation
 // ---------------------------------------------------------------------------
 

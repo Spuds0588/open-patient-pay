@@ -1,5 +1,15 @@
 import nodemailer from "nodemailer";
+import { prisma } from "@/db/client";
 import { config } from "./config";
+
+export type EmailKind =
+  | "MAGIC_LINK"
+  | "PORTAL_LINK"
+  | "RECEIPT"
+  | "STATEMENT"
+  | "REMINDER"
+  | "BULK_STATEMENT"
+  | "BULK_REMINDER";
 
 export interface EmailMessage {
   to: string;
@@ -57,4 +67,43 @@ export async function sendMail(msg: EmailMessage): Promise<SendResult> {
     // Never fail a request because mail failed; fall back to mock preview.
     return { sent: false, preview: msg };
   }
+}
+
+/**
+ * Send an email to a patient AND write an EmailLog row so the billing team
+ * can see every message that went out. Uses the same mock-mode behavior as
+ * sendMail; the log records whether it was actually delivered.
+ */
+export async function sendPatientEmail(input: {
+  patientId: string;
+  kind: EmailKind;
+  to: string;
+  subject: string;
+  html: string;
+}): Promise<SendResult> {
+  const patient = await prisma.patient.findUnique({
+    where: { id: input.patientId },
+    select: { organizationId: true },
+  });
+  const result = await sendMail({
+    to: input.to,
+    subject: input.subject,
+    html: input.html,
+  });
+  if (patient) {
+    await prisma.emailLog.create({
+      data: {
+        organizationId: patient.organizationId,
+        patientId: input.patientId,
+        kind: input.kind,
+        to: input.to,
+        subject: input.subject,
+        status: result.sent ? "SENT" : "MOCKED",
+      },
+    }).catch((err) => {
+      // A failed log write must never break the send path.
+      console.error("EmailLog write failed:", err);
+    });
+  }
+  return result;
 }
