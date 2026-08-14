@@ -1,0 +1,54 @@
+# Open Patient Pay — local / private-cloud orchestration.
+# `docker compose up -d` brings up Postgres (with a persistent volume) and the
+# stateless Next.js app. See README.md for first-run and backup guidance.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-open_patient_pay}
+    volumes:
+      # Named volume: survives container restarts/crashes. Host backups are the
+      # clinic's responsibility (see README "Backups").
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-open_patient_pay}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-open_patient_pay}
+      APP_NAME: ${APP_NAME:-My Clinic}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
+      MOCK_PAYMENTS: ${MOCK_PAYMENTS:-true}
+      ENABLE_CLINIC_REGISTRATION: ${ENABLE_CLINIC_REGISTRATION:-false}
+      ENABLE_PATIENT_PORTAL: ${ENABLE_PATIENT_PORTAL:-true}
+      ENABLE_AUTO_DEBIT: ${ENABLE_AUTO_DEBIT:-true}
+      PLAN_ALLOW_CUSTOM_PERIODS: ${PLAN_ALLOW_CUSTOM_PERIODS:-true}
+      PLAN_ALLOW_CUSTOM_DATE: ${PLAN_ALLOW_CUSTOM_DATE:-true}
+      PLAN_MIN_PAYMENT_CENTS: ${PLAN_MIN_PAYMENT_CENTS:-1000}
+      PLAN_MAX_PAYMENTS: ${PLAN_MAX_PAYMENTS:-48}
+      PLAN_MAX_MONTHS: ${PLAN_MAX_MONTHS:-60}
+      PLAN_FIRST_PAYMENT_WINDOW_DAYS: ${PLAN_FIRST_PAYMENT_WINDOW_DAYS:-60}
+      PLAN_ALLOWED_PERIOD_UNITS: ${PLAN_ALLOWED_PERIOD_UNITS:-DAY,WEEK,MONTH}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:

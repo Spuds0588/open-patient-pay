@@ -1,0 +1,44 @@
+{
+  "name": "open-patient-pay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Open-source, self-hosted billing and installment engine for independent medical practices.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed",
+    "prisma:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "csv-parse": "5.6.0",
+    "next": "15.5.23",
+    "react": "19.0.8",
+    "react-dom": "19.0.8",
+    "stripe": "22.5.0",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "prisma": "6.19.3",
+    "tailwindcss": "3.4.19",
+    "tsx": "^4.19.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}

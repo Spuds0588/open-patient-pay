@@ -1,0 +1,195 @@
+// Open Patient Pay — Prisma schema
+//
+// Architectural rules (from the master document):
+//   1. UUIDs only — every primary key is a String UUID, never an auto-increment int.
+//   2. Singleton multi-tenancy — every table carries organizationId. V1 provisions
+//      exactly one Organization via the seed script and all writes default to it.
+//   3. Money is stored as strict integers (cents) — never floats.
+//   4. The ledger (Transaction) is append-only — enforced at the application layer
+//      (no update/delete routes) and reinforced by a Postgres trigger (see
+//      prisma/migrations for the DO NOTHING update/delete trigger).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PeriodUnit {
+  DAY
+  WEEK
+  MONTH
+}
+
+enum InstallmentStatus {
+  SCHEDULED
+  PAID
+  FAILED
+  CANCELLED
+}
+
+enum PlanStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum TransactionType {
+  PAYMENT
+  REFUND
+  ADJUSTMENT
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  timezone  String   @default("America/New_York")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patients        Patient[]
+  invoices        Invoice[]
+  transactions    Transaction[]
+  installmentPlan InstallmentPlan[]
+  installment     Installment[]
+}
+
+model Patient {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  // Optional external identifier from the practice's system / CSV / EHR export.
+  externalId String?
+  name       String
+  email      String?
+  phone      String?
+
+  // Opaque token used in the patient portal URL (/pay/{payToken}).
+  payToken String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoices   Invoice[]
+  plans      InstallmentPlan[]
+  transactions Transaction[]
+
+  @@index([organizationId])
+  @@index([organizationId, externalId])
+}
+
+model Invoice {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  invoiceNumber String  @unique
+  description   String
+  totalCents    Int
+  issuedAt      DateTime
+  dueAt         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+  plan         InstallmentPlan?
+
+  @@index([organizationId])
+  @@index([patientId])
+}
+
+// Append-only financial ledger. A PAYMENT moves money in, a REFUND or negative
+// ADJUSTMENT moves money out. Amounts are signed: payments are positive,
+// refunds/adjustments are negative (except positive adjustments, e.g. a fee).
+model Transaction {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  invoiceId String?
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+
+  type        TransactionType
+  status      TransactionStatus @default(SUCCEEDED)
+  amountCents Int // signed integer, always in cents
+
+  // External reference (e.g. Stripe PaymentIntent id) for idempotent webhooks.
+  externalRef String? @unique
+
+  description String
+  occurredAt  DateTime @default(now())
+
+  installment Installment?
+
+  @@index([organizationId])
+  @@index([patientId])
+  @@index([invoiceId])
+  @@index([occurredAt])
+}
+
+model InstallmentPlan {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  invoiceId String  @unique
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+
+  count         Int
+  periodUnit    PeriodUnit @default(MONTH)
+  periodValue   Int @default(1)
+  totalCents    Int
+  firstPaymentAt DateTime @default(now())
+  status        PlanStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  installments Installment[]
+
+  @@index([organizationId])
+  @@index([patientId])
+}
+
+model Installment {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  planId String
+  plan   InstallmentPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  index       Int
+  amountCents Int
+  dueDate     DateTime
+  status      InstallmentStatus @default(SCHEDULED)
+
+  // The payment that satisfied this installment (if any).
+  transactionId String?      @unique
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+
+  @@unique([planId, index])
+  @@index([organizationId])
+  @@index([dueDate])
+}

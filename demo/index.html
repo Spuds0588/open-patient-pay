@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Open Patient Pay — Live Demo</title>
+<meta name="description" content="Scroll through an interactive demo of Open Patient Pay: try the patient and provider portals, then learn how to self-host it with one command." />
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #0f172a;
+    --muted: #f1f5f9;
+    --muted-fg: #64748b;
+    --border: #e2e8f0;
+    --primary: #2563eb;
+    --primary-fg: #ffffff;
+    --primary-soft: #eff6ff;
+    --success: #d1fae5;
+    --success-fg: #065f46;
+    --danger: #fee2e2;
+    --danger-fg: #991b1b;
+    --warning: #fef3c7;
+    --warning-fg: #92400e;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(15,23,42,.08), 0 12px 32px rgba(15,23,42,.08);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--fg); background: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+  header.site {
+    position: sticky; top: 0; z-index: 60; background: rgba(255,255,255,.86);
+    backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+  }
+  .site-inner { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; color: var(--fg); }
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  nav.site-nav { display: flex; gap: 2px; align-items: center; }
+  nav.site-nav a { color: var(--muted-fg); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 12px; border-radius: 8px; }
+  nav.site-nav a:hover { color: var(--fg); background: var(--muted); }
+  .gh-btn {
+    display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 12px; font-size: 13px; font-weight: 600; color: var(--fg);
+    text-decoration: none; background: #fff;
+  }
+  @media (max-width: 720px) { nav.site-nav { display: none; } }
+
+  .section { padding: 72px 0; }
+  .section.tinted { background: #fff; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); }
+  h1, h2, h3 { letter-spacing: -.02em; }
+  h1 { font-size: clamp(30px, 5vw, 52px); line-height: 1.08; margin: 14px 0; }
+  h2 { font-size: clamp(24px, 3.5vw, 34px); margin: 0 0 10px; }
+  .lead { color: var(--muted-fg); font-size: 18px; max-width: 680px; margin: 0 auto; }
+  .center { text-align: center; }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 22px 0 0; }
+  .chip-static {
+    display: inline-flex; align-items: center; gap: 7px; background: #fff; border: 1px solid var(--border);
+    border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 600;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0;
+    border-radius: 9px; padding: 11px 18px; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: .15s; text-decoration: none; color: var(--fg);
+  }
+  .btn.primary { background: var(--primary); color: #fff; }
+  .btn.primary:hover { background: #1d4ed8; }
+  .btn.outline { background: #fff; border: 1px solid var(--border); }
+  .btn.outline:hover { background: var(--muted); }
+  .btn.block { width: 100%; }
+  .btn.lg { padding: 14px 24px; font-size: 15px; }
+  .btn:disabled { opacity: .55; cursor: default; }
+
+  /* ---- scaled device frames ---- */
+  .device-stage { position: relative; }
+  .device-tabs { display: inline-flex; gap: 4px; background: var(--muted); padding: 4px; border-radius: 999px; margin-bottom: 22px; }
+  .device-tabs button { border: 0; background: transparent; padding: 9px 20px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--muted-fg); cursor: pointer; }
+  .device-tabs button.active { background: #fff; color: var(--fg); box-shadow: var(--shadow); }
+
+  .browser {
+    background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(15,23,42,.18);
+  }
+  .browser-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: #fbfcfe; }
+  .dots { display: flex; gap: 6px; }
+  .dots span { width: 11px; height: 11px; border-radius: 50%; }
+  .dots span:nth-child(1){ background:#ff5f57;} .dots span:nth-child(2){ background:#febc2e;} .dots span:nth-child(3){ background:#28c840;}
+  .url { flex: 1; background: var(--muted); border-radius: 7px; padding: 5px 12px; font-size: 12px; color: var(--muted-fg); font-family: var(--mono); overflow: hidden; white-space: nowrap; }
+  .shell { width: 100%; overflow: hidden; position: relative; background: #f8fafc; }
+  .screen { transform-origin: top left; }
+
+  /* ---- phone chrome (inside the patient screen) ---- */
+  .phone-status { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; padding: 8px 16px 4px; color: var(--fg); }
+
+  /* ---- app UI shared ---- */
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+  .card.pad { padding: 18px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 620px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .kpi { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 13px; }
+  .kpi .label { font-size: 11px; color: var(--muted-fg); }
+  .kpi .value { font-size: 20px; font-weight: 700; margin-top: 2px; }
+  .kpi .value.accent { color: var(--primary); }
+  .kpi .value.danger { color: #dc2626; }
+  .balance { background: linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; border-radius: 12px; padding: 18px; position: relative; overflow: hidden; }
+  .balance::after { content:""; position:absolute; right:-50px; top:-50px; width:170px; height:170px; background:rgba(255,255,255,.08); border-radius:50%; }
+  .balance .label { font-size: 12px; opacity:.85; }
+  .balance .amount { font-size: 34px; font-weight: 800; letter-spacing:-.02em; }
+  .balance .note { font-size: 12px; opacity:.85; margin-top:2px; }
+  .pill { display:inline-flex; align-items:center; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+  .pill.ok{ background:var(--success); color:var(--success-fg); }
+  .pill.warn{ background:var(--warning); color:var(--warning-fg); }
+  .pill.ghost{ background:var(--muted); color:var(--muted-fg); }
+  .pill.bad{ background:var(--danger); color:var(--danger-fg); }
+  .options { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .opt { border:1px solid var(--border); border-radius:10px; padding:10px 12px; cursor:pointer; text-align:left; background:#fff; transition:.12s; }
+  .opt:hover { background: var(--muted); }
+  .opt.sel { border-color:var(--primary); background:var(--primary-soft); box-shadow: inset 0 0 0 1px var(--primary); }
+  .opt .t { font-weight:700; font-size:13px; }
+  .opt .d { font-size:11px; color:var(--muted-fg); margin-top:2px; }
+  .field { margin-bottom:10px; }
+  .field label { font-size:12px; font-weight:600; color:var(--muted-fg); display:block; margin-bottom:5px; }
+  .input { width:100%; border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:14px; font-family:var(--mono); outline:none; background:#fff; color:var(--fg); }
+  .input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,.15); }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .seg { display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; }
+  .seg button { flex:1; border:0; background:transparent; padding:8px 4px; font-size:13px; cursor:pointer; color:var(--muted-fg); }
+  .seg button.sel { background:var(--primary); color:#fff; }
+  .seg button:disabled { opacity:.4; cursor:default; }
+  .hint { font-size:11px; color:var(--muted-fg); text-align:center; margin-top:8px; }
+  .list { list-style:none; margin:0; padding:0; }
+  .row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .row:last-child { border-bottom:0; }
+  .row .muted { color:var(--muted-fg); font-size:11px; }
+  .right { display:flex; align-items:center; gap:8px; }
+  .money { font-weight:600; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th { text-align:left; color:var(--muted-fg); font-weight:600; padding:7px 8px; border-bottom:1px solid var(--border); }
+  td { padding:8px; border-bottom:1px solid var(--border); }
+  tr:last-child td { border-bottom:0; }
+  .tabbar { display:flex; gap:2px; border-bottom:1px solid var(--border); background:#fff; padding:0 12px; }
+  .tabbar button { border:0; background:transparent; padding:10px 12px; font-size:13px; font-weight:600; color:var(--muted-fg); cursor:pointer; border-bottom:2px solid transparent; }
+  .tabbar button.sel { color:var(--primary); border-bottom-color:var(--primary); }
+  .drop { border:2px dashed var(--border); border-radius:10px; padding:22px; text-align:center; color:var(--muted-fg); cursor:pointer; font-size:13px; }
+  .drop:hover { border-color:var(--primary); background:var(--primary-soft); }
+  .toggle { position:relative; width:40px; height:22px; border-radius:999px; background:#cbd5e1; border:0; cursor:pointer; transition:.15s; flex:none; }
+  .toggle::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; transition:.15s; }
+  .toggle.on { background:var(--primary); }
+  .toggle.on::after { transform:translateX(18px); }
+
+  /* ---- modal ---- */
+  .modal-bg { position:fixed; inset:0; background:rgba(15,23,42,.5); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
+  .modal-bg.open { display:flex; }
+  .modal { background:#fff; border-radius:14px; width:100%; max-width:400px; box-shadow:0 24px 60px rgba(0,0,0,.3); overflow:hidden; }
+  .modal .m-head { padding:16px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .modal .m-body { padding:18px; }
+  .stripe-tag { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted-fg); }
+  .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .check { width:52px; height:52px; border-radius:50%; background:var(--success); color:var(--success-fg); display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 12px; }
+  .hidden { display:none !important; }
+
+  /* ---- sections below the demo ---- */
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns:1fr; } }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width: 820px) { .grid3 { grid-template-columns:1fr; } }
+  .step { background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px; box-shadow:var(--shadow); }
+  .step .num { width:30px; height:30px; border-radius:8px; background:var(--primary-soft); color:var(--primary); font-weight:700; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+  .step code { font-size:12px; }
+  pre.code {
+    background:#0f172a; color:#e2e8f0; border-radius:12px; padding:16px 18px; overflow-x:auto;
+    font-family:var(--mono); font-size:13px; line-height:1.6; margin:0; position:relative;
+  }
+  pre.code .c { color:#7dd3fc; } /* comment */
+  pre.code .p { color:#f472b6; } /* prompt-ish */
+  .codeblock { position:relative; }
+  .copy {
+    position:absolute; top:10px; right:10px; background:#1e293b; color:#cbd5e1; border:1px solid #334155;
+    border-radius:7px; padding:5px 10px; font-size:12px; cursor:pointer; font-family:inherit;
+  }
+  .copy:hover { background:#334155; }
+  .logos { display:flex; flex-wrap:wrap; gap:10px; }
+  .logo-chip { background:#fff; border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; }
+  .logo-chip .sub { font-weight:400; color:var(--muted-fg); font-size:12px; }
+  .note { font-size:13px; color:var(--muted-fg); }
+  footer.site { border-top:1px solid var(--border); background:#fff; padding:40px 0 56px; color:var(--muted-fg); font-size:13px; text-align:center; }
+  footer.site a { color:var(--primary); }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap site-inner">
+    <a class="brand" href="#top"><span class="logo">OP</span> Open Patient Pay</a>
+    <nav class="site-nav">
+      <a href="#demo">Try it</a>
+      <a href="#standup">Stand it up</a>
+      <a href="#integrations">Integrations</a>
+      <a href="#agents">For devs</a>
+    </nav>
+    <a class="gh-btn" href="https://github.com/Spuds0588/open-patient-pay" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="section center" id="top" style="padding-bottom:24px;">
+  <div class="wrap">
+    <span class="eyebrow">Open source · self-hosted · no software fees</span>
+    <h1>Dignified medical billing,<br /><span style="color:var(--primary)">without the predatory fees.</span></h1>
+    <p class="lead">Scroll to actually <strong>use</strong> the patient and provider portals below — set up a plan, pay with a simulated Stripe checkout, import a CSV, and connect an EHR. Then see how a practice spins it up in one command.</p>
+    <div class="pill-row">
+      <span class="chip-static">💳 Stripe</span>
+      <span class="chip-static">🩺 FHIR R4</span>
+      <span class="chip-static">🐘 Postgres</span>
+      <span class="chip-static">🐳 Docker</span>
+      <span class="chip-static">⚛️ Next.js</span>
+    </div>
+    <p style="margin-top:26px; color:var(--muted-fg); font-size:14px;">↓ keep scrolling — it&apos;s interactive</p>
+  </div>
+</section>
+
+<!-- ============ INTERACTIVE DEMO ============ -->
+<section class="section tinted" id="demo" style="padding-top:24px;">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:8px;">
+      <span class="eyebrow">Try it yourself</span>
+      <h2>Two portals, one billing engine</h2>
+    </div>
+
+    <div class="center" style="margin-bottom:10px;">
+      <div class="device-tabs">
+        <button id="tab-patient" class="active">👤 Patient experience</button>
+        <button id="tab-provider">🏥 Provider dashboard</button>
+      </div>
+    </div>
+
+    <!-- PATIENT (phone frame) -->
+    <div class="device-stage" id="stage-patient">
+      <div class="browser" style="max-width:420px; margin:0 auto;">
+        <div class="browser-bar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="url">pay.openpatientpay.com/pay/&lt;token&gt;</div>
+        </div>
+        <div class="shell" data-width="390" data-height="820">
+          <div class="screen" style="width:390px;">
+            <div class="phone-status"><span>9:41</span><span>🔒 pay.openpatientpay.com</span></div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 16px; border-bottom:1px solid var(--border); background:#fff;">
+              <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;"><span class="logo" style="width:26px;height:26px;font-size:11px;">OP</span> Open Patient Pay</div>
+              <span style="font-size:12px; color:var(--muted-fg);">Marcus Chen</span>
+            </div>
+            <div style="padding:14px 16px 40px; background:#f8fafc;">
+              <p style="font-size:12px; color:var(--muted-fg); margin:0;">Hello, Marcus 👋</p>
+              <h3 style="margin:2px 0 8px; font-size:20px;">Your medical bill</h3>
+              <div class="balance">
+                <div class="label">Total balance</div>
+                <div class="amount" id="p-balance">$1,240.00</div>
+                <div class="note" id="p-note">1 invoice · Emergency room visit</div>
+              </div>
+
+              <div class="card pad" style="margin-top:12px;" id="p-plan-step">
+                <div style="font-weight:700; font-size:14px; margin-bottom:4px;">Your bill — Marcus Chen</div>
+                <div style="font-size:11px; color:var(--muted-fg); margin-bottom:12px;">Invoice INV-1001 · issued Jul 1, 2026</div>
+                <div class="field"><label>Choose a plan</label></div>
+                <div class="options" id="p-options"></div>
+                <div id="p-custom" class="hidden" style="margin-top:10px; border:1px solid var(--border); border-radius:10px; padding:10px; background:var(--muted);">
+                  <div class="row2">
+                    <div class="field"><label>Pay every</label><input class="input" type="number" id="p-period-value" min="1" value="1" /></div>
+                    <div class="field"><label>Period</label>
+                      <div class="seg" id="p-units">
+                        <button data-unit="DAY">Days</button><button data-unit="WEEK">Weeks</button><button data-unit="MONTH">Months</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field"><label>Number of payments</label><input class="input" type="number" id="p-count" min="1" value="3" /></div>
+                </div>
+                <div id="p-date" class="field" style="margin-top:10px;">
+                  <label>First payment date</label>
+                  <input class="input" type="date" id="p-first-date" />
+                  <div style="font-size:11px; color:var(--muted-fg); margin-top:4px;">Later payments follow your chosen period automatically.</div>
+                </div>
+                <p style="font-size:12px; color:var(--muted-fg);" id="p-summary"></p>
+                <p style="font-size:12px; color:var(--danger-fg);" id="p-validation" class="hidden"></p>
+                <button class="btn primary block" id="p-begin">Set up plan &amp; pay</button>
+                <p class="hint">🔒 Secured by Stripe. Card data never touches the clinic&apos;s server.</p>
+              </div>
+
+              <div class="card pad hidden" style="margin-top:12px;" id="p-success-step">
+                <div class="center">
+                  <div class="check">✓</div>
+                  <div style="font-weight:700; font-size:16px;">Payment received</div>
+                  <div class="note" style="margin:4px 0 12px;">Your first payment is confirmed.</div>
+                </div>
+                <ul class="list" id="p-schedule"></ul>
+                <button class="btn outline block" id="p-reset" style="margin-top:12px;">↺ Reset demo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROVIDER (desktop frame) -->
+    <div class="device-stage hidden" id="stage-provider">
+      <div class="browser">
+        <div class="browser-bar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="url">admin.openpatientpay.com/dashboard</div>
+        </div>
+        <div class="shell" data-width="1100" data-height="760">
+          <div class="screen" style="width:1100px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid var(--border); background:#fff;">
+              <div style="display:flex; align-items:center; gap:10px; font-weight:700;">
+                <span class="logo">OP</span> Open Patient Pay
+                <span style="background:var(--muted); color:var(--muted-fg); font-size:11px; padding:2px 8px; border-radius:999px;">Admin</span>
+              </div>
+              <div class="tabbar" style="border:0; padding:0;" id="provider-tabs"></div>
+            </div>
+            <div style="padding:20px; background:#f8fafc; min-height:640px;">
+              <div id="prov-dashboard">
+                <div class="kpis" id="prov-kpis"></div>
+                <div class="grid2" style="margin-top:16px;">
+                  <div class="card pad">
+                    <div style="font-weight:700; margin-bottom:8px;">Recent ledger activity</div>
+                    <ul class="list" id="prov-ledger"></ul>
+                  </div>
+                  <div class="card pad">
+                    <div style="font-weight:700; margin-bottom:8px;">Integrations</div>
+                    <ul class="list">
+                      <li class="row"><div><div class="money">Stripe payments</div><div class="muted" id="prov-stripe-status">Not connected — mock mode</div></div><button class="btn outline" id="prov-stripe" style="padding:6px 12px; font-size:12px;">Connect</button></li>
+                      <li class="row"><div><div class="money">EHR / FHIR records</div><div class="muted" id="prov-fhir-status">Not connected</div></div><button class="btn outline" id="prov-fhir" style="padding:6px 12px; font-size:12px;">Connect</button></li>
+                      <li class="row"><div><div class="money">Hosting</div><div class="muted">Any Docker host</div></div><span class="pill ok">ready</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div id="prov-import" class="hidden">
+                <div class="card pad">
+                  <div style="font-weight:700; margin-bottom:6px;">Import billing CSV</div>
+                  <p class="note" style="margin:0 0 12px;">Weekly practice-management export → patients &amp; invoices. Parsed in memory, nothing written to disk.</p>
+                  <div class="drop" id="prov-drop">Drop a CSV here, or <strong>click to load sample</strong></div>
+                  <div id="prov-import-result" class="hidden" style="margin-top:12px;">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;"><span class="pill ok">5 patients</span><span class="pill ok">5 invoices</span><span class="pill ghost">0 skipped</span></div>
+                    <table id="prov-import-table"></table>
+                  </div>
+                </div>
+              </div>
+
+              <div id="prov-settings" class="hidden">
+                <div class="card pad" style="max-width:560px;">
+                  <div style="font-weight:700; margin-bottom:4px;">Plan settings</div>
+                  <p class="note" style="margin:0 0 14px;">Limits you set here are enforced live in the patient portal. (In the real app these are <code>.env</code> values.)</p>
+                  <div class="row2">
+                    <div class="field"><label>Min payment ($)</label><input class="input" type="number" id="s-min" value="10" min="1" /></div>
+                    <div class="field"><label>Max months</label><input class="input" type="number" id="s-months" value="60" min="1" /></div>
+                  </div>
+                  <div class="row2">
+                    <div class="field"><label>Max payments</label><input class="input" type="number" id="s-payments" value="48" min="1" /></div>
+                    <div class="field"><label>First-payment window (days)</label><input class="input" type="number" id="s-window" value="60" min="1" /></div>
+                  </div>
+                  <div class="row" style="padding:8px 0;"><div>Allow custom periods</div><button class="toggle on" id="s-custom"></button></div>
+                  <div class="row" style="padding:8px 0;"><div>Allow choosing first-payment date</div><button class="toggle on" id="s-date"></button></div>
+                  <p class="note" style="margin-top:10px;">Tip: raise “Min payment” to $50, then switch to the Patient tab and try an 8-payment plan — it&apos;ll be rejected.</p>
+                </div>
+              </div>
+
+              <div id="prov-ledger-view" class="hidden">
+                <div class="card pad">
+                  <div style="font-weight:700; margin-bottom:4px;">Append-only ledger</div>
+                  <p class="note" style="margin:0 0 12px;">Payments, refunds, and adjustments are new rows. Nothing is ever edited.</p>
+                  <table id="prov-ledger-table"></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="note center" style="margin-top:18px;">This page is a static simulation. The real app is stateless, stores money as integer cents, and keeps an append-only ledger.</p>
+  </div>
+</section>
+
+<!-- ============ STAND IT UP ============ -->
+<section class="section" id="standup">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">Deployment</span>
+      <h2>Spin it up in one command</h2>
+      <p class="lead">A single <code>docker compose up -d</code> brings up Postgres (on a persistent volume) and the stateless app. It runs on anything that can run Docker — no Kubernetes, no vendor lock-in.</p>
+    </div>
+    <div class="grid3" style="margin-top:36px;">
+      <div class="step">
+        <div class="num">1</div>
+        <h3 style="margin:0 0 8px; font-size:16px;">Clone</h3>
+        <pre class="code" style="font-size:12px;">git clone https://github.com/Spuds0588/open-patient-pay.git
+cd open-patient-pay</pre>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3 style="margin:0 0 8px; font-size:16px;">Configure</h3>
+        <pre class="code" style="font-size:12px;">cp .env.example .env
+# edit DATABASE_URL, APP_BASE_URL,
+# plan limits, Stripe keys…</pre>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3 style="margin:0 0 8px; font-size:16px;">Launch</h3>
+        <pre class="code" style="font-size:12px;">docker compose up -d
+docker compose exec app \
+  npx prisma db seed   # demo data</pre>
+      </div>
+    </div>
+    <p class="note center" style="margin-top:22px;">Migrations run automatically on boot. Backups are a one-liner <code>pg_dump</code> (see the README).</p>
+  </div>
+</section>
+
+<!-- ============ PLATFORMS & PROCESSORS ============ -->
+<section class="section tinted" id="integrations">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">Runs anywhere · processes with anyone</span>
+      <h2>No lock-in, on either side</h2>
+      <p class="lead">Because the app is stateless and every external dependency sits behind an adapter interface, you can host it on your favorite platform and swap processors without touching business logic.</p>
+    </div>
+    <div class="grid2" style="margin-top:36px;">
+      <div class="card pad">
+        <h3 style="margin:0 0 12px;">Hosting providers</h3>
+        <div class="logos">
+          <span class="logo-chip">🖥️ Bare-metal VPS</span>
+          <span class="logo-chip">🇩🇪 Hetzner</span>
+          <span class="logo-chip">🌊 DigitalOcean</span>
+          <span class="logo-chip">☁️ AWS Lightsail</span>
+          <span class="logo-chip">🪰 Fly.io</span>
+          <span class="logo-chip">▲ Render</span>
+          <span class="logo-chip">🚂 Railway</span>
+          <span class="logo-chip">🛠️ Coolify</span>
+          <span class="logo-chip">🐳 Any Docker host</span>
+        </div>
+        <p class="note" style="margin-top:14px;">Postgres runs in a named Docker volume, so a container crash never costs you data — and self-hosters keep 100% of their PHI.</p>
+      </div>
+      <div class="card pad">
+        <h3 style="margin:0 0 12px;">Payment processors &amp; EHRs</h3>
+        <div class="logos">
+          <span class="logo-chip">💳 Stripe <span class="sub">built-in</span></span>
+          <span class="logo-chip">▣ Square <span class="sub">via adapter</span></span>
+          <span class="logo-chip">🅰 Adyen <span class="sub">via adapter</span></span>
+          <span class="logo-chip">🅱 Braintree <span class="sub">via adapter</span></span>
+          <span class="logo-chip">🩺 FHIR R4 <span class="sub">Epic · Cerner · athena</span></span>
+          <span class="logo-chip">📄 CSV <span class="sub">any practice mgmt export</span></span>
+        </div>
+        <p class="note" style="margin-top:14px;">The <code>PaymentAdapter</code> and <code>DataIngestionAdapter</code> interfaces mean a new processor or EHR feed is a drop-in module, not a rewrite.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOR DEVS / AGENTS ============ -->
+<section class="section" id="agents">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">For developers &amp; coding agents</span>
+      <h2>Hand it to Claude Code, Cursor, or Codebuff</h2>
+      <p class="lead">The repo ships an <code>AGENTS.md</code> governance file, a typed schema, and a full test suite — so an AI agent can stand it up for you (or for a client) reliably. Copy and paste.</p>
+    </div>
+    <div class="grid2" style="margin-top:36px;">
+      <div>
+        <h3 style="font-size:16px;">Stand it up for yourself</h3>
+        <div class="codeblock">
+          <button class="copy" data-copy="copy1">Copy</button>
+          <pre class="code" id="copy1"><span class="c"># in any agent (Claude Code, Codebuff, Cursor…)</span>
+Stand up Open Patient Pay from https://github.com/Spuds0588/open-patient-pay.
+Copy .env.example to .env, set DATABASE_URL and APP_BASE_URL,
+then run `docker compose up -d` and seed the demo data.
+When you're done, give me the patient portal link for the sample patient.</pre>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:16px;">Deploy it for a client</h3>
+        <div class="codeblock">
+          <button class="copy" data-copy="copy2">Copy</button>
+          <pre class="code" id="copy2"><span class="c"># customize the bracketed values, then hand it over</span>
+Help me launch Open Patient Pay for a client called &lt;Clinic Name&gt;.
+Clone the repo, set APP_BASE_URL to https://pay.&lt;clinic&gt;.com,
+connect Stripe with their keys, set PLAN_MAX_MONTHS=36 and
+PLAN_MIN_PAYMENT_CENTS=2000, deploy on &lt;Hetzner / Fly.io / Render&gt;,
+and give me a go-live checklist.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="card pad" style="margin-top:20px;">
+      <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between; align-items:center;">
+        <div>
+          <h3 style="margin:0 0 4px; font-size:16px;">Why agents do well here</h3>
+          <p class="note" style="margin:0;">Strict TypeScript, 30+ unit tests on the money math, an append-only ledger trigger, and explicit architecture rules in <code>AGENTS.md</code>.</p>
+        </div>
+        <a class="btn primary" href="https://github.com/Spuds0588/open-patient-pay" target="_blank" rel="noopener">Read AGENTS.md →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <p><strong>Open Patient Pay</strong> — open-source, self-hosted billing &amp; installment engine.</p>
+    <p>Apache-2.0 · <a href="https://github.com/Spuds0588/open-patient-pay" target="_blank" rel="noopener">github.com/Spuds0588/open-patient-pay</a></p>
+    <p class="note" style="margin-top:8px;">Demo only — no real charge is made. Card data is simulated and never leaves this page.</p>
+  </div>
+</footer>
+
+<!-- payment modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="m-head">
+      <div class="stripe-tag">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#635bff"><path d="M13.5 8.2c0-.7-.57-1-1.53-1H9.6l-2.6 9.6h2.2l.6-2.3h1.6c1.7 0 3.2-.7 3.2-2.6 0-1.5-1.2-2.5-2.9-2.5h-.8l.4-1.5h.9c.4 0 .7.2.7.6l.1.7h2zm-1.7 3.7h-1.1l.7-2.6h1.1c.8 0 1.3.3 1.3 1.2 0 .9-.7 1.4-2 1.4z"/><path d="M9 8.2l-2.6 9.6H4.2l2.6-9.6H9z"/></svg>
+        Stripe Checkout
+      </div>
+      <button class="btn outline" id="modal-close" style="padding:4px 8px;">✕</button>
+    </div>
+    <div class="m-body" id="modal-body">
+      <div id="pay-form">
+        <div class="row" style="padding-top:0;"><div class="muted">First payment due now</div><div class="money" id="pay-amount">$206.67</div></div>
+        <div class="field"><label>Card number</label><input class="input" id="card-number" placeholder="4242 4242 4242 4242" inputmode="numeric" maxlength="19" /></div>
+        <div class="row2">
+          <div class="field"><label>Expiry</label><input class="input" id="card-expiry" placeholder="12 / 29" maxlength="7" /></div>
+          <div class="field"><label>CVC</label><input class="input" id="card-cvc" placeholder="123" inputmode="numeric" maxlength="4" /></div>
+        </div>
+        <div class="field"><label>ZIP</label><input class="input" id="card-zip" placeholder="10001" inputmode="numeric" maxlength="10" /></div>
+        <button class="btn primary block" id="btn-pay">Pay <span id="btn-pay-amount">$206.67</span></button>
+        <p class="hint">Demo only — no real charge. Card data is simulated, never sent.</p>
+      </div>
+      <div id="pay-processing" class="hidden center" style="padding:40px 0;">
+        <div style="display:flex; justify-content:center; margin-bottom:14px;"><div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;"></div></div>
+        <p>Processing payment…</p>
+        <p class="note">Tokenizing card with Stripe</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function splitEvenly(total, parts){
+    var base = Math.floor(total/parts), rem = total - base*parts, out=[];
+    for (var i=0;i<parts;i++) out.push(base + (i<rem?1:0));
+    return out;
+  }
+  function fmt(c){ var a=Math.abs(Math.round(c)), d=Math.floor(a/100), r=a%100; return (c<0?"-":"")+"$"+d.toLocaleString("en-US")+"."+String(r).padStart(2,"0"); }
+  function addMonthsClamped(date, months){
+    var y=date.getUTCFullYear(), m=date.getUTCMonth(), day=date.getUTCDate();
+    var t=new Date(Date.UTC(y, m+months, 1));
+    var last=new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth()+1, 0)).getUTCDate();
+    t.setUTCDate(Math.min(day,last)); return t;
+  }
+  function dueDate(unit, value, first, index){
+    var steps = index*value;
+    if (unit==="DAY"){ var d=new Date(first); d.setUTCDate(d.getUTCDate()+steps); return d; }
+    if (unit==="WEEK"){ var w=new Date(first); w.setUTCDate(w.getUTCDate()+steps*7); return w; }
+    return addMonthsClamped(first, steps);
+  }
+  function termMonths(unit, value, count){
+    var pp = unit==="MONTH"?1 : unit==="WEEK"?7/30.4375 : 1/30.4375;
+    return count*value*pp;
+  }
+  function todayISO(offsetDays){
+    var d=new Date(); if(offsetDays) d.setDate(d.getDate()+offsetDays);
+    var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+    return y+"-"+m+"-"+day;
+  }
+  function fmtDate(d){ return d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}); }
+
+  var TOTAL = 124000;
+  var settings = { minCents:1000, maxMonths:60, maxPayments:48, windowDays:60, allowCustom:true, allowDate:true };
+  var pState = { count:3, unit:"MONTH", value:1, custom:false, paid:[] };
+  var provState = { stripe:false, fhir:false, tab:"dashboard" };
+
+  var PRESETS = [
+    { label:"Pay in full", hint:"1 payment", count:1, unit:"MONTH", value:1 },
+    { label:"3 monthly", hint:"every month", count:3, unit:"MONTH", value:1 },
+    { label:"6 monthly", hint:"every month", count:6, unit:"MONTH", value:1 },
+    { label:"12 monthly", hint:"every month", count:12, unit:"MONTH", value:1 },
+    { label:"Weekly", hint:"every week", count:12, unit:"WEEK", value:1 },
+    { label:"Every 2 weeks", hint:"bi-weekly", count:12, unit:"WEEK", value:2 }
+  ];
+  var UNIT_LABEL = { DAY:"days", WEEK:"weeks", MONTH:"months" };
+
+  // ---- scaled screens ----
+  function fitScreens(){
+    document.querySelectorAll(".shell").forEach(function(shell){
+      var screen = shell.querySelector(".screen");
+      var w = parseInt(shell.getAttribute("data-width"),10);
+      var h = parseInt(shell.getAttribute("data-height"),10);
+      var scale = shell.clientWidth / w;
+      shell.style.height = (h*scale) + "px";
+      screen.style.width = w + "px";
+      screen.style.transform = "scale(" + scale + ")";
+    });
+  }
+
+  // ---- patient rendering ----
+  function amounts(){ return splitEvenly(TOTAL, pState.count); }
+  function firstPayment(){ return amounts()[0]; }
+  function renderOptions(){
+    var box = $("p-options"); box.innerHTML = "";
+    PRESETS.forEach(function(o){
+      var b=document.createElement("button"); b.type="button";
+      var sel = !pState.custom && pState.count===o.count && pState.unit===o.unit && pState.value===o.value;
+      b.className = "opt" + (sel?" sel":"");
+      var amt = splitEvenly(TOTAL, o.count)[0];
+      b.innerHTML = '<div class="t">'+o.label+'</div><div class="d">'+(o.count===1?o.hint:o.hint+" · ~"+fmt(amt)+" each")+'</div>';
+      b.onclick=function(){ pState.custom=false; pState.count=o.count; pState.unit=o.unit; pState.value=o.value; renderOptions(); renderPatient(); };
+      box.appendChild(b);
+    });
+    if (settings.allowCustom){
+      var c=document.createElement("button"); c.type="button";
+      c.className = "opt" + (pState.custom?" sel":"");
+      c.innerHTML = '<div class="t">Custom schedule</div><div class="d">choose your own period &amp; count</div>';
+      c.onclick=function(){ pState.custom=true; if(pState.count===1) pState.count=3; renderOptions(); renderPatient(); };
+      box.appendChild(c);
+    }
+    $("p-custom").classList.toggle("hidden", !pState.custom);
+    $("p-date").classList.toggle("hidden", !settings.allowDate);
+    renderUnits();
+  }
+  function renderUnits(){
+    $("p-units").querySelectorAll("button").forEach(function(b){
+      var u=b.getAttribute("data-unit");
+      b.classList.toggle("sel", pState.unit===u);
+    });
+  }
+  function renderPatient(){
+    $("p-period-value").value = pState.value;
+    $("p-count").value = pState.count;
+    var amts = amounts(), per = amts[0], months = termMonths(pState.unit, pState.value, pState.count);
+    var firstDate = new Date(($("p-first-date").value||todayISO())+"T00:00:00Z");
+    var lastDate = dueDate(pState.unit, pState.value, firstDate, pState.count-1);
+    $("p-summary").innerHTML = pState.count + (pState.count>1?" payments":" payment") + " of <strong>" + fmt(per) + "</strong>" +
+      (pState.count>1?" each":"") + (months>0? " · ~"+Math.round(months)+" month"+(Math.round(months)===1?"":"s")+" total":"") +
+      (pState.count>1? " · last "+fmtDate(lastDate):"");
+
+    var err=null;
+    if (pState.count > settings.maxPayments) err = "Maximum "+settings.maxPayments+" payments.";
+    else if (months > settings.maxMonths) err = "Plan is longer than the "+settings.maxMonths+"-month maximum.";
+    else if (pState.count>1 && per < settings.minCents) err = "Each payment must be at least "+fmt(settings.minCents)+".";
+    $("p-validation").classList.toggle("hidden", !err);
+    $("p-validation").textContent = err || "";
+    $("p-begin").disabled = !!err;
+    $("p-begin").innerHTML = "Set up plan &amp; pay " + fmt(per);
+    $("pay-amount").textContent = fmt(per);
+    $("btn-pay-amount").textContent = fmt(per);
+    renderSchedule();
+  }
+  function renderSchedule(){
+    var ul = $("p-schedule"); ul.innerHTML="";
+    var amts=amounts();
+    amts.forEach(function(a,i){
+      var li=document.createElement("li"); li.className="row";
+      var paid = pState.paid.indexOf(i)>=0;
+      var d = dueDate(pState.unit, pState.value, new Date(($("p-first-date").value||todayISO())+"T00:00:00Z"), i);
+      li.innerHTML = '<div><div style="font-weight:600;">'+(i===0?"First payment":"Payment #"+(i+1))+'</div><div class="muted">'+fmtDate(d)+'</div></div>'+
+        '<div class="right"><span class="money">'+fmt(a)+'</span>'+(paid?'<span class="pill ok">Paid</span>':'<span class="pill ghost">Scheduled</span>')+'</div>';
+      ul.appendChild(li);
+    });
+  }
+  function renderPatientBalance(){
+    var paidTotal = pState.paid.reduce(function(acc,i){ return acc + amounts()[i]; }, 0);
+    var outstanding = TOTAL - paidTotal;
+    $("p-balance").textContent = fmt(outstanding);
+    $("p-note").textContent = paidTotal>0 ? fmt(paidTotal)+" paid · 1 invoice" : "1 invoice · Emergency room visit";
+  }
+
+  // ---- provider rendering ----
+  var PROVIDER_TABS = [["dashboard","Dashboard"],["import","Import CSV"],["settings","Plan settings"],["ledger","Ledger"]];
+  function renderProviderTabs(){
+    var bar=$("provider-tabs"); bar.innerHTML="";
+    PROVIDER_TABS.forEach(function(t){
+      var b=document.createElement("button"); b.textContent=t[1]; b.type="button";
+      b.classList.toggle("sel", provState.tab===t[0]);
+      b.onclick=function(){ provState.tab=t[0]; renderProviderTabs(); switchProviderTab(); };
+      bar.appendChild(b);
+    });
+  }
+  function switchProviderTab(){
+    ["dashboard","import","settings","ledger-view"].forEach(function(id){
+      $("prov-"+id).classList.toggle("hidden", id!==provState.tab && !(id==="ledger-view" && provState.tab==="ledger"));
+    });
+  }
+  function renderProvider(){
+    var collected = pState.paid.reduce(function(acc,i){return acc+amounts()[i];},0);
+    $("prov-kpis").innerHTML =
+      kpi("Outstanding", fmt(TOTAL-collected), "accent") +
+      kpi("Collected", fmt(collected), "") +
+      kpi("Billed", fmt(TOTAL), "") +
+      kpi("Overdue", "1", "danger");
+    $("prov-ledger").innerHTML =
+      row("PAYMENT","Marcus Chen","First installment","+$206.67", "ok") +
+      row("PAYMENT","Aisha Patel","Payment 1 of 6","+$143.34","ok") +
+      row("ADJUSTMENT","Emily Johnson","Insurance write-off","−$90.00","ghost");
+    $("prov-ledger-table").innerHTML =
+      '<tr><th>Type</th><th>Patient</th><th>Description</th><th style="text-align:right">Amount</th></tr>' +
+      '<tr><td><span class="pill ok">PAYMENT</span></td><td>Marcus Chen</td><td>First installment</td><td style="text-align:right;font-weight:600;">+$206.67</td></tr>' +
+      '<tr><td><span class="pill ok">PAYMENT</span></td><td>Aisha Patel</td><td>Payment 1 of 6</td><td style="text-align:right;font-weight:600;">+$143.34</td></tr>' +
+      '<tr><td><span class="pill ghost">ADJUSTMENT</span></td><td>Emily Johnson</td><td>Insurance write-off</td><td style="text-align:right;font-weight:600;">−$90.00</td></tr>';
+  }
+  function kpi(label,value,cls){ return '<div class="kpi"><div class="label">'+label+'</div><div class="value '+cls+'">'+value+'</div></div>'; }
+  function row(type,name,desc,amount,cls){
+    return '<li class="row"><div class="right"><span class="pill '+(cls==="ok"?"ok":"ghost")+'">'+type+'</span><span>'+name+'</span><span class="muted">'+desc+'</span></div><span class="money" style="color:'+(amount[0]==="-"? "#dc2626":"#059669")+'">'+amount+'</span></li>';
+  }
+
+  // ---- tabs (patient vs provider) ----
+  function setTab(which){
+    var p = which==="patient";
+    $("tab-patient").classList.toggle("active", p);
+    $("tab-provider").classList.toggle("active", !p);
+    $("stage-patient").classList.toggle("hidden", !p);
+    $("stage-provider").classList.toggle("hidden", p);
+    fitScreens();
+  }
+  $("tab-patient").addEventListener("click", function(){ setTab("patient"); });
+  $("tab-provider").addEventListener("click", function(){ setTab("provider"); });
+
+  // ---- settings inputs ----
+  function readSettings(){
+    settings.minCents = Math.max(1, Math.round((parseFloat($("s-min").value)||10)*100));
+    settings.maxMonths = Math.max(1, parseInt($("s-months").value,10)||60);
+    settings.maxPayments = Math.max(1, parseInt($("s-payments").value,10)||48);
+    settings.windowDays = Math.max(1, parseInt($("s-window").value,10)||60);
+    settings.allowCustom = $("s-custom").classList.contains("on");
+    settings.allowDate = $("s-date").classList.contains("on");
+    var max = todayISO(settings.windowDays);
+    $("p-first-date").max = max;
+    renderOptions(); renderPatient();
+  }
+  ["s-min","s-months","s-payments","s-window"].forEach(function(id){
+    $(id).addEventListener("input", readSettings);
+  });
+  $("s-custom").addEventListener("click", function(){ this.classList.toggle("on"); readSettings(); });
+  $("s-date").addEventListener("click", function(){ this.classList.toggle("on"); readSettings(); });
+
+  // ---- patient inputs ----
+  $("p-period-value").addEventListener("input", function(){ pState.value=Math.max(1, parseInt(this.value,10)||1); renderPatient(); });
+  $("p-count").addEventListener("input", function(){ pState.count=Math.max(1, parseInt(this.value,10)||1); renderPatient(); });
+  $("p-units").addEventListener("click", function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    pState.unit=b.getAttribute("data-unit"); renderUnits(); renderPatient();
+  });
+  $("p-first-date").addEventListener("input", function(){ renderPatient(); });
+
+  // ---- payment ----
+  $("p-begin").addEventListener("click", function(){ openModal(); });
+  function openModal(){ $("modal").classList.add("open"); $("pay-form").classList.remove("hidden"); $("pay-processing").classList.add("hidden"); }
+  function closeModal(){ $("modal").classList.remove("open"); }
+  $("modal-close").addEventListener("click", closeModal);
+  $("modal").addEventListener("click", function(e){ if(e.target===$("modal")) closeModal(); });
+  function formatCard(v){ return v.replace(/\D/g,"").slice(0,16).replace(/(\d{4})(?=\d)/g,"$1 "); }
+  function formatExpiry(v){ var d=v.replace(/\D/g,"").slice(0,4); return d.length>2? d.slice(0,2)+" / "+d.slice(2):d; }
+  $("card-number").addEventListener("input", function(e){ e.target.value=formatCard(e.target.value); });
+  $("card-expiry").addEventListener("input", function(e){ e.target.value=formatExpiry(e.target.value); });
+  $("card-cvc").addEventListener("input", function(e){ e.target.value=e.target.value.replace(/\D/g,"").slice(0,4); });
+  $("card-zip").addEventListener("input", function(e){ e.target.value=e.target.value.replace(/\D/g,"").slice(0,10); });
+  $("btn-pay").addEventListener("click", function(){
+    var num=$("card-number").value.replace(/\s/g,"");
+    if (num.length!==16){ alert("Enter a 16-digit card number (try 4242 4242 4242 4242)."); return; }
+    $("pay-form").classList.add("hidden"); $("pay-processing").classList.remove("hidden");
+    setTimeout(function(){
+      pState.paid.push(0);
+      closeModal();
+      $("p-plan-step").classList.add("hidden");
+      $("p-success-step").classList.remove("hidden");
+      renderPatientBalance(); renderSchedule(); renderProvider();
+    }, 1500);
+  });
+  $("p-reset").addEventListener("click", function(){
+    pState = { count:3, unit:"MONTH", value:1, custom:false, paid:[] };
+    $("p-plan-step").classList.remove("hidden");
+    $("p-success-step").classList.add("hidden");
+    renderOptions(); renderPatient(); renderPatientBalance(); renderProvider();
+  });
+
+  // ---- provider integrations ----
+  $("prov-stripe").addEventListener("click", function(){
+    provState.stripe=!provState.stripe;
+    $("prov-stripe-status").textContent = provState.stripe ? "Connected — live key sk_live_••••" : "Not connected — mock mode";
+    this.textContent = provState.stripe ? "Disconnect" : "Connect";
+  });
+  $("prov-fhir").addEventListener("click", function(){
+    provState.fhir=!provState.fhir;
+    $("prov-fhir-status").textContent = provState.fhir ? "Connected — Epic FHIR sandbox" : "Not connected";
+    this.textContent = provState.fhir ? "Disconnect" : "Connect";
+  });
+  $("prov-drop").addEventListener("click", function(){
+    $("prov-import-result").classList.remove("hidden");
+    $("prov-import-table").innerHTML =
+      '<tr><th>Patient</th><th>Invoice</th><th style="text-align:right">Amount</th></tr>' +
+      '<tr><td>Marcus Chen</td><td>INV-1001</td><td style="text-align:right">$1,240.00</td></tr>' +
+      '<tr><td>Aisha Patel</td><td>INV-1002</td><td style="text-align:right">$860.00</td></tr>' +
+      '<tr><td>Diego Ramirez</td><td>INV-1003</td><td style="text-align:right">$215.50</td></tr>' +
+      '<tr><td>Emily Johnson</td><td>INV-1004</td><td style="text-align:right">$490.00</td></tr>' +
+      '<tr><td>Tom Okafor</td><td>INV-1005</td><td style="text-align:right">$150.00</td></tr>';
+    this.innerHTML = "✓ Imported 5 patients &amp; 5 invoices";
+  });
+
+  // ---- copy buttons ----
+  document.querySelectorAll(".copy").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var el = $(btn.getAttribute("data-copy"));
+      var text = el.textContent.replace(/^\s+|\s+$/g,"");
+      navigator.clipboard.writeText(text).then(function(){
+        btn.textContent="Copied ✓"; setTimeout(function(){ btn.textContent="Copy"; },1600);
+      });
+    });
+  });
+
+  // ---- init ----
+  $("p-first-date").value = todayISO();
+  $("p-first-date").min = todayISO();
+  $("p-first-date").max = todayISO(settings.windowDays);
+  renderOptions(); renderPatient(); renderPatientBalance();
+  renderProviderTabs(); switchProviderTab(); renderProvider();
+  window.addEventListener("resize", fitScreens);
+  setTab("patient");
+})();
+</script>
+</body>
+</html>
